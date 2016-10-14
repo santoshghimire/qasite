@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Available Articles</h1>
+
+<div class="row">
+	<div class="col-md-12">
+		<ol>
+		{% for article in object_list %}
+			<li>
+				{{article}}
+			</li>
+		{% endfor %}
+		</ol>
+	</div>
+</div>
+{% endblock content %}
