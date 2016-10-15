@@ -6,13 +6,13 @@
 {% block content %}
 <div class="row">
     <form class="col-sm-12 " action="." method='GET' style="margin-top:5%;margin-bottom:1%;">
-        <div class="col-sm-6" style="float: right; margin-bottom: 1%;">
+        <div class="col-sm-6" style="margin-bottom: 1%;">
             <div class="input-group">
                 <input type="text" id="searchText" value="{{request.GET.q}}" class="form-control" placeholder="Search for..." name="q">
-                <span class="input-group-btn">
-                    <button id="searchQuestions" class="btn btn-default" type="submit">Go!</button>
-                  </span>
             </div>
+        </div>
+        <div class="col-sm-6" style="margin-bottom: 1%;">
+          <a href="{% url 'question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
         </div>
     </div>
     {% if request.GET.deleted %} 
@@ -86,107 +86,4 @@
       </div>
     </div>
 </div>
-{% endblock %} {% block javascript %}
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({ extensions: ["tex2jax.js"], jax: ["input/TeX", "output/HTML-CSS"], tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], displayMath: [ ['$$','$$'], ["\\[","\\]"] ], processEscapes: true }, "HTML-CSS": { availableFonts: ["TeX"] } });
-</script>
-<script type="text/javascript">
-$('#searchQuestions').on('click', function() {
-    var search_text = $('#searchText').val();
-});
-
-var current_url = '/entrance/question/list/' + '{{program_slug|safe}}';
-var topic_id = {{selected_topics | safe}};
-var marks = {{selected_marks | safe}};
-var difficulty = {{selected_diff | safe}};
-var verifications = {{selected_veri | safe}};
-var page = {{page | safe}};
-var searchTxt = "{{filter_search|safe}}";
-
-function inputchecked(data_val, type, counter) {
-    if (type == "title") {
-        var ckb = $("#topic_" + data_val).is(':checked');
-        if (ckb) {
-            if(topic_id.indexOf(data_val)==-1){
-                topic_id.push(data_val);
-            }
-        } else {
-            var indx = topic_id.indexOf(data_val);
-            topic_id.splice(indx, 1);
-        }
-    }
-
-    if (type == "marks") {
-        var ckb = $("#marks_" + counter).is(':checked');
-        if (ckb) {
-            if(marks.indexOf(data_val)==-1){
-                marks.push(data_val);
-            }
-        } else {
-            var indx = marks.indexOf(data_val);
-            marks.splice(indx, 1);
-        }
-    }
-
-    if (type == "diff") {
-        var ckb = $("#diff_" + data_val).is(':checked');
-        if (ckb) {
-            if(difficulty.indexOf(data_val)==-1){
-                difficulty.push(data_val);                
-            }
-        } else {
-            var indx = difficulty.indexOf(data_val);
-            difficulty.splice(indx, 1);
-        }
-    }
-
-    if (type == "veri") {
-        var ckb = $("#veri_" + data_val).is(':checked');
-        if (ckb) {
-            if(verifications.indexOf(data_val)==-1){
-                verifications.push(data_val);
-            }
-        } else {
-            var indx = verifications.indexOf(data_val);
-            verifications.splice(indx, 1);
-        }
-    }
-}
-
-function do_search() {
-    var searchText = $('#searchText').val();
-    page = 1;
-    console.log(topic_id);
-    window.location.href = current_url + "?tids=" + topic_id + "&marks=" + marks + "&difficulty=" + difficulty + "&page=" + page + "&verifications=" + verifications + "&search=" + searchText;
-}
-
-$('#searchQuestions').on('click', function() {
-    var searchText = $('#searchText').val();
-    page = 1;
-    console.log(topic_id);
-    window.location.href = current_url + "?tids=" + topic_id + "&marks=" + marks + "&difficulty=" + difficulty + "&page=" + page + "&verifications=" + verifications + "&search=" + searchText;
-});
-
-function set_page(page_num) {
-    window.location.href = current_url + "?tids=" + topic_id + "&marks=" + marks + "&difficulty=" + difficulty + "&page=" + page_num + "&verifications=" + verifications + "&search=" + searchTxt;
-    console.log(topic_id);
-}
-
-function do_print() {
-    window.print();
-}
-
-$('#searchText').keypress(function (e) {
- var key = e.which;
- if(key == 13)  // the enter key code
-  {
-    var searchText = $('#searchText').val();
-    window.location.href = current_url + "?tids=" + topic_id + "&marks=" + marks + "&difficulty=" + difficulty + "&page=" + page + "&verifications=" + verifications + "&search=" + searchText;
-    console.log(tids);
-  }
-});
-
-</script>
 {% endblock %}
