@@ -13,7 +13,6 @@
       <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    {% block css %}
     <!-- Latest compiled and minified Bootstrap 4 Alpha 4 CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
 
@@ -22,6 +21,7 @@
     <!-- This file stores project-specific CSS -->
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
     
+    {% block css %}
     {% endblock %}
 
   </head>
@@ -41,7 +41,7 @@
             <ul class="nav navbar-nav">
               {% if request.user.is_superuser %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'qlist' %}">Question Bank</a>
+                <a class="nav-link" href="{% url 'qa:qlist' %}">Question Bank</a>
               </li>
               <li class="nav-item">
                   <a class="nav-link" href="/admin/">Admin</a>

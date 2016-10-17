@@ -42,3 +42,4 @@ redis>=2.10.5
 
 # Your custom requirements go here
 django-autoslug==1.9.3
+djangorestframework==3.3.1

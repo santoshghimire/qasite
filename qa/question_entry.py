@@ -45,7 +45,7 @@ class QuestionCreateView(SuperuserRequiredMixin, View):
     def get_success_url(self):
         """For Success on question addition."""
         url = reverse(
-            "question-create"
+            "qa:question-create"
         ) + "?success=true"
         return url
 
@@ -68,7 +68,7 @@ class QuestionUpdateView(SuperuserRequiredMixin, View):
 
     def get_success_url(self):
         return reverse(
-            'question-update',
+            'qa:question-update',
             kwargs={'id': self.kwargs.get('id')}
         ) + "?success=true"
 

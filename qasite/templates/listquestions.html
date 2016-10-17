@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="col-sm-6" style="margin-bottom: 1%;">
-          <a href="{% url 'question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
+          <a href="{% url 'qa:question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
         </div>
     </div>
     {% if request.GET.deleted %} 
@@ -28,11 +28,13 @@
     <div class="col-sm-12 " style="margin-top:1%;margin-bottom:1%;">
             {% for quest in object_list %}
             <div class="highlight" style="margin-top:10px;min-height:100px;">
-                <p> {{forloop.counter|add:"-1"|add:start}}) <a href="{% url 'question-update' quest.id %}">{{quest.text}}</a></p>
+                <p> {{forloop.counter|add:"-1"|add:start}}) <a href="{% url 'qa:question-update' quest.id %}">{{quest.text}}</a></p>
                 <span class="label label-default" style="float:left"> Article: {{quest.article}} </span>
                 <span class="label label-default" style="float:right"> Category: {{quest.category}} </span>
             </div>
             <hr>
+            {% empty %}
+              <h2>No Questions !</h2>
             {% endfor %}
     <div class="row">
       <div class="col-md-6 pagination">

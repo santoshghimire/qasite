@@ -2,10 +2,12 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import (
-    Category, Article, Question, Option
+    Category, Article, Question, Option,
+    QuestionAttempt
 )
 
 admin.site.register(Option)
+admin.site.register(QuestionAttempt)
 
 
 @admin.register(Category)

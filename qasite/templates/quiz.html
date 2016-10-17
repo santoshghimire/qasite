@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load staticfiles i18n %}
+{% block title %}
+{{article}} - Quiz
+{% endblock title %}
+
+{% block css %}
+<link href="{% static 'css/quiz.css' %}" rel="stylesheet">
+<style type="text/css">
+.answerbtn{
+    min-width:100%;
+    display: block;
+    text-align: left;
+    margin-top: 15px;
+    padding-left: 10px !important;
+    cursor: pointer;
+    background-color: #eee;
+    min-height: 40px;
+    line-height: 40px;
+}
+.answerbtn:hover{
+    background-color: #ddd;
+}
+
+</style>
+{% endblock css %}
+
+{% block content %}
+            <div class="row" id="timer_sidebar">                    
+                    <div class="col-sm-4">
+                        <span class="small-font">Article: {{article}}</span>
+                    </div>
+                    <div class="col-sm-4 offset-sm-4" class="small-font">
+                        <p class="total-questions">Total Questions: {{questions|length}}</p>
+                    </div>
+                    <div class="col-sm-2" class="small-font">
+                        <p class="remaining-questions">Remaining: </p>
+                    </div>
+            </div>
+            
+            <div class="row examdiv outer" id="examMainDiv">
+                <div class="inner">
+                    <div class="wrapper col-sm-12">
+                        <div class="question-main">
+                            <div class="row">
+                                <div class="q_no col-sm-1" style="width: 0.1%;"></div>
+                                <div class="question col-sm-11"></div>
+                            </div>
+                        </div>
+                        <div class="options col-sm-6">
+                            <div class="ans-text col-sm-12" style="display:none">
+                                <textarea id="subjective-answer" class="form-control" rows="10" cols="40" placeholder="Write tha answer here."></textarea>
+                            </div>
+
+                        </div>
+                        <div class="question-image col-sm-6" style="display: none;"></div>
+                        <div class="action col-sm-12">
+                            <button type="button" class="btn btn-success next " disabled="disabled" onclick="next()">Next</button>
+                        </div>
+                    </div>
+                    <div class="passage col-sm-7" style="display: none;">
+                    </div>
+                    
+                </div>
+            </div> 
+    </div>
+
+<div class="modal fade" id="examCompleteModal" style="margin-top: 12%;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">You have completed the quiz for {{article}}.</h4>
+      </div>
+      <div class="modal-body">
+        <p></p>
+        <p>Click OK to continue.</p>
+      </div>
+      <div class="modal-footer" style="text-align: center;">
+        <a href="{% url 'qa:home' %}" class="btn btn-primary">Okay</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock content %}
+
+{% block javascript %}
+<script src="{% static 'js/csrftoken.js' %}"></script>
+<script type="text/javascript">
+global_exam_data = '';
+global_is_clicked = false;
+global_question_number = 0;
+
+$(document).ready(function() {
+    get_exam_data();
+});
+
+function get_exam_data(){
+    // start exam
+    var exam_url = "/api/quiz/start/{{article.slug}}/";
+    $.ajax({
+        url: exam_url,
+        type: "GET",
+        success: function(data) {
+            global_exam_data = data;
+            first_question = data.questions[global_question_number];
+            set_question(first_question, global_question_number);
+        },
+        error: function( xhr, status, errorThrown ) {
+            var error_msg = 'Error !';
+            if(errorThrown=='Forbidden'){
+                error_msg = 'Permission Denied !'
+            }
+            $('#examCompleteModal').modal({backdrop: 'static', keyboard: false});
+            $('.modal-title').html(error_msg);
+            $('#examCompleteModal').modal('show');
+            console.log(errorThrown);
+        }
+    });
+}
+
+function set_question(data, question_no){
+    question_no += 1;
+    if(data.question){        
+        var q_no = '<span class="question-no">' + question_no +')&nbsp;</span>'
+        $('.question').html(data.question.text);
+        $('.q_no').html(q_no);
+        $('.question').attr('style', 'font-size: medium;');
+        $('.question-no').attr('style', 'font-size: medium;');
+
+        if(data.question.image){
+            $('.question-image').html('<img height="250px" class="img-responsive" style="float:right;" src="' + data.question.image + '">');
+            $('.question-image').prop('style', 'margin-top: 20px;');
+        }else{
+            $('.question-image').prop('style', 'display: none;');
+        }
+        $('.wrapper').removeClass('col-sm-5');
+        $('.wrapper').addClass('col-sm-12');
+        $('.passage').prop('style', 'display: none;');
+
+        for (var i = 0; i <= data.options.length -1; i++) {
+            var opt = data.options[i];
+            var opt_name = opt.name;
+            var opt_text = opt.text;
+            var opt_html = '<div class="opt col-sm-12" min-width="100%">' +
+            '<div id="opt_id_' + opt_name + '" class="answerbtn" onclick="submit_answer(\'' + data.question.id.toString() +'\',\''+ global_exam_data.id.toString() +'\',\''+ opt_name +'\')">'+ opt_name +
+            '.&nbsp;&nbsp;&nbsp;' + opt_text;
+
+            if(opt.image){
+                var img_element = '<img height="150px" src="' + opt.image + '">';
+                opt_html += '<div class="a-image" style="display: inline;">' + img_element +'</div></div></div>';
+            }else{
+                opt_html += '<div class="a-image" style="display: none;"></div></div></div>';
+            }
+            $('.options').append(opt_html);
+        }
+
+        $('.remaining-questions').html('Remaining: ' + parseInt(global_exam_data.questions.length - q_no));
+    }else{
+        // exam complete, so call endexam api
+        end_exam();
+    }
+}
+
+function end_exam(){
+    $('#examCompleteModal').modal({backdrop: 'static', keyboard: false});
+    $('#examCompleteModal').modal('show');
+}
+
+function submit_answer(question_id, quiz_id, given_answer){
+    if (global_is_clicked){
+        return false;
+    }
+    var data = {
+        'question_id': parseInt(question_id),
+        'quiz_id': parseInt(quiz_id),
+        'given_answer': given_answer
+    }
+    var submit_url = '/api/question/attempt/';
+    enable_next();
+    $.ajax({
+        url: submit_url,
+        type: "POST",
+        data: data,
+        success: function(data) {
+            console.log('success')
+            if (data.correct == 'true'){
+                // show green for given answer
+                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
+            }else{
+                // show red for given answer
+                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
+                // show green for correct answer
+                $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
+            }
+            global_is_clicked = true;
+            global_question_number += 1;
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function enable_next(){
+    $('.next').prop('disabled', false);
+}
+
+function next(){
+    var next_question = global_exam_data.questions[global_question_number];
+    reset_answer_colors();
+    if (next_question){
+        global_is_clicked = false;
+        set_question(next_question, global_question_number);
+    }else{
+        // no next question available
+        end_exam();
+    }
+}
+
+function reset_answer_colors(){
+
+    $('.answerbtn').attr('style', 'background-color: #eee');
+    $('.opt').remove();
+}
+
+</script>
+{% endblock javascript %}

@@ -11,7 +11,11 @@ from .question_entry import (
     QuestionDeleteView, QuestionListView
 )
 from .views import ArticleListView
-
+from .quiz import QuizView
+from .api import (
+    StartQuizApi, QuestionApi,
+    QuestionAttemptCreate
+)
 
 urlpatterns = [
     url(
@@ -38,5 +42,26 @@ urlpatterns = [
         regex=r'^question/list/$',
         view=QuestionListView.as_view(),
         name='qlist'
+    ),
+    url(
+        regex=r'^quiz/(?P<article_id>[-\w]+)/$',
+        view=QuizView.as_view(),
+        name='start-quiz'
+    ),
+
+    url(
+        regex=r'^api/quiz/start/(?P<slug>[-\w]+)/$',
+        view=StartQuizApi.as_view(),
+        name='start_quiz_api'
+    ),
+    url(
+        regex=r'^api/question/(?P<id>[-\d]+)/$',
+        view=QuestionApi.as_view(),
+        name='question_api'
+    ),
+    url(
+        regex=r'^api/question/attempt/$',
+        view=QuestionAttemptCreate.as_view(),
+        name='question_attempt_create'
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -59,12 +59,14 @@ class Article(models.Model):
     content = models.FileField(
         upload_to='article',
         null=True,
+        blank=True,
         validators=[validate_file],
         help_text='Maximum file size allowed is 5Mb'
     )
     audio = models.FileField(
         upload_to='article',
         null=True,
+        blank=True,
         validators=[validate_audio],
         help_text='Maximum file size allowed is 5Mb'
     )
@@ -102,18 +104,21 @@ class Question(TimeStampedModel):
     image = models.ImageField(
         upload_to='questionImages',
         null=True,
+        blank=True,
         validators=[validate_image],
         help_text='Maximum file size allowed is 2Mb'
     )
     audio = models.FileField(
         upload_to='questionAudio',
         null=True,
+        blank=True,
         validators=[validate_audio],
         help_text='Maximum file size allowed is 5Mb'
     )
     video = models.FileField(
         upload_to='questionVideo',
         null=True,
+        blank=True,
         validators=[validate_video],
         help_text='Maximum file size allowed is 10Mb'
     )
@@ -148,12 +153,14 @@ class Question(TimeStampedModel):
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
+        blank=True,
         related_name="updatedby"
     )
 
     verified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
+        blank=True,
         related_name="verifiedby"
     )
 
@@ -183,6 +190,7 @@ class Option(models.Model):
     image = models.ImageField(
         upload_to='answerImages',
         null=True,
+        blank=True,
         validators=[validate_image],
         help_text='Maximum file size allowed is 2Mb'
     )
@@ -232,7 +240,7 @@ class QuestionAttempt(TimeStampedModel):
     given_answer = models.CharField(max_length=8000)
     is_correct = models.BooleanField()
     attempted = models.BooleanField(default=False)
-    exam = models.ForeignKey(Quiz)
+    quiz = models.ForeignKey(Quiz)
 
     # Object Manager
     objects = QuestionAttemptManager()
@@ -246,4 +254,4 @@ class QuestionAttempt(TimeStampedModel):
 
     def __str__(self):
         """Magic function for string."""
-        return self.given_answer + ': ' + self.question.question_text[:20]
+        return self.given_answer + ': ' + self.question.text[:20]
