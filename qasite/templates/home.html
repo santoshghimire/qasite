@@ -9,6 +9,7 @@
 		{% for article in object_list %}
 			<li>
 				{{article}}
+				<br>
 				<a href="{% url 'qa:start-quiz' article_id=article.id %}">Start Quiz</a>
 			</li>
 		{% endfor %}
