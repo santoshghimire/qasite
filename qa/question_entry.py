@@ -1,9 +1,10 @@
 """Module for question entry."""
 import json
+import xlrd
 # from django.db.models import Q
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
-from django.views.generic import View, ListView
+from django.views.generic import View
 from braces.views import SuperuserRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -27,7 +28,6 @@ class QuestionCreateView(SuperuserRequiredMixin, View):
     def get_form_kwargs(self):
         """Return the keyword arguments for instantiating the form."""
         kwargs = super(QuestionCreateView, self).get_form_kwargs()
-        print('get_form_kwargs called')
         if hasattr(self, 'object'):
             kwargs.update({'instance': self.object})
         kwargs['request'] = self.request
@@ -179,16 +179,14 @@ class QuestionDeleteView(View):
             )
 
 
-class QuestionListView(SuperuserRequiredMixin, ListView):
+class QuestionListView(SuperuserRequiredMixin, View):
     """Render dashboard for question management."""
 
     template_name = 'listquestions.html'
     url_name = 'qlist'
 
-    def get(self, request, *args, **kwargs):
-        """Get Values from database."""
+    def get_context_data(self, request):
         context = {}
-
         search_text = self.request.GET.get('q', '')
         if search_text:
             queryset = Question.objects.filter(
@@ -218,6 +216,44 @@ class QuestionListView(SuperuserRequiredMixin, ListView):
         context['end'] = end
         context['total'] = paginator.count
         context['object_list'] = queryset
+        context['articles'] = Article.objects.all().order_by('title')
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """Get Values from database."""
+        context = self.get_context_data(request)
+        return render(
+            request,
+            self.template_name,
+            context
+        )
+
+    def post(self, request, *args, **kwargs):
+        excel_file = request.FILES.get('inputFile')
+        article_id = request.POST.get('article')
+        article = Article.objects.get(id=int(article_id))
+        book = xlrd.open_workbook(file_contents=excel_file.read())
+        if book.nsheets:
+            first_sheet = book.sheet_by_index(0)
+            for row in range(first_sheet.nrows):
+                row_data = first_sheet.row_values(row)
+                text = row_data[0]  # question text
+                correct = str(row_data[1])[0]  # correct answer
+                question = Question(
+                    text=text, question_type='objective',
+                    correct=correct, difficulty=1,
+                    category=article.category,
+                    article=article
+                )
+                question.save()
+                for i in range(2, len(row_data)):
+                    Option.objects.create(
+                        name=str(i - 1),
+                        text=row_data[i],
+                        question=question
+                    )
+        context = self.get_context_data(request)
+        context['import_msg'] = 'Bulk Question Import completed successfully !'
         return render(
             request,
             self.template_name,
