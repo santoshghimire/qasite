@@ -232,7 +232,7 @@ function confirm_delete(id){
       success: function(data){
         if(data['status']=='ok'){
             $('#closeModal').click();
-            window.location.href = '/';
+            window.location.href = '/question/list/';
         }
         else{
             $('#closeModal').click();
