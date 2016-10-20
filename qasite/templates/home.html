@@ -1,19 +1,451 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+{% block css %}
+<style type="text/css">
+.article{
+	min-height: 100px;
+	margin-bottom: 20px;
+	margin-top: 20px;
+	/*margin-right: 20px;*/
+	background-color: #519696;
+	border-radius: 5px;
+	text-align: center;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.article-title{
+	font-size: 20px;
+	color: white;
+}
+.white{
+	color: white;
+	font-size: 20px;
+}
+.grey{
+	color: #9e9595;
+	font-size: 20px;
+}
+.action-item{
+	margin-right: 20px;
+}
+.title{
+	margin-bottom: 20px;
+	text-align: center;
+}
+#audio-modal-body, #article-modal-title, #audio-modal-title{
+	text-align: center;
+}
+
+/* Quiz CSS */
+body{
+	background-color: #CEC8C8;
+}
+.examdiv{
+	padding: 10px 30px 10px 30px;
+	margin-top: 10px;
+	border-radius: 5px;
+	background-color: white;
+	min-height: 300px;
+}
+.answerbtn{
+    min-width:100%;
+    display: block;
+    text-align: left;
+    margin-top: 15px;
+    padding-left: 10px !important;
+    cursor: pointer;
+    background-color: #eee;
+    min-height: 40px;
+    line-height: 40px;
+}
+.answerbtn:hover{
+    background-color: #ddd;
+}
+/*#timer_sidebar{
+	padding-top: 10px;
+	margin-top: 30px;
+	border-radius: 5px;
+	background-color: white;
+}*/
+.question-main{
+	padding-bottom: 20px;
+}
+.opt, .ans-text{
+	padding-bottom: 20px;	
+}
+label{
+	padding-left: 5px;
+}
+.options{
+	padding-left: 30px;
+}
+.next{
+	margin-left: 10px;
+}
+.outer {
+  display: flex;
+}
+.inner {
+  align-self: center;
+  width: 100%;
+}
+.passage{
+	font-size: 15px;
+	text-align: justify;
+	white-space: pre-wrap;
+	overflow-y: scroll;
+	max-height: 400px;
+}
+.question{
+	white-space: pre-wrap;
+}
+.small-font{
+	font-size: 15px;
+}
+
+@media only screen 
+and (min-device-width : 600px) 
+and (max-device-width : 800px){
+	.examdiv{
+		padding: 10px 30px 0px 30px;
+		margin-top: 10px;
+		min-height: 350px;
+		font-size: 12px;
+	}
+	.passage{
+		font-size: 12px;
+		max-height: 300px;
+	}
+	#timer_sidebar{
+		font-size: 12px;
+	}
+	.small-font{
+		font-size: 12px;
+	}
+}
+</style>
+
+{% endblock css %}
 
 {% block content %}
-<h1>Available Articles</h1>
+<h1 class="title">Available Articles</h1>
 
 <div class="row">
 	<div class="col-md-12">
-		<ol>
 		{% for article in object_list %}
-			<li>
-				{{article}}
-				<br>
-				<a href="{% url 'qa:start-quiz' article_id=article.id %}">Start Quiz</a>
-			</li>
+		<div class="col-md-3 article offset-md-1">
+		<p class="article-title">{{article}}</p>
+		<div class="actions">
+			<a href="#" class="action-item" onclick="show_article('{{article.title}}', '{{article.id}}')" title="Read this article."><i class="fa fa-eye white" aria-hidden="true"></i></a>
+			{% if article.audio %}
+			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
+			{% else %}
+			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
+			{% endif %}
+			<a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
+		</div>
+		</div>
 		{% endfor %}
-		</ol>
 	</div>
 </div>
 {% endblock content %}
+
+{% block modal %}
+<div class="modal fade" id="articleModal" style="margin-top: 12%;">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body()"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="article-modal-title"></h4>
+      </div>
+      <div class="modal-body" id="article-modal-body">
+
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="audioModal" style="margin-top: 12%;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body('#audio-modal-body')"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="audio-modal-title"></h4>
+      </div>
+      <div class="modal-body" id="audio-modal-body">
+
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="quizModal" style="margin-top: 12%;">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body('#quiz-modal-body')"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="quiz-modal-title"></h4>
+      </div>
+      <div class="modal-body" id="quiz-modal-body">
+	            <div class="row examdiv outer" id="examMainDiv">
+	                <div class="inner">
+	                    <div class="wrapper col-sm-12">
+	                        <div class="question-main">
+	                            <div class="row">
+	                                <div class="q_no col-sm-1" style="width: 0.1%;"></div>
+	                                <div class="question col-sm-11"></div>
+	                            </div>
+	                        </div>
+	                        <div class="options col-sm-6">
+	                            <div class="ans-text col-sm-12" style="display:none">
+	                                <textarea id="subjective-answer" class="form-control" rows="10" cols="40" placeholder="Write tha answer here."></textarea>
+	                            </div>
+
+	                        </div>
+	                        <div class="question-image col-sm-6" style="display: none;"></div>
+	                        <div class="action col-sm-12">
+	                            <button type="button" class="btn btn-success next " disabled="disabled" onclick="next()">Next</button>
+	                        </div>
+	                    </div>
+	                    <div class="passage col-sm-7" style="display: none;">
+	                    </div>
+	                    
+	                </div>
+	            </div> 
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="errorModal" style="margin-top: 12%;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="error-modal-title"></h4>
+      </div>
+      <div class="modal-body" id="error-modal-body">
+
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+{% endblock modal %}
+
+{% block javascript %}
+<script src="{% static 'js/csrftoken.js' %}"></script>
+<script type="text/javascript">
+global_content_page_number = 0;
+global_content_data = '';
+function show_article(title, id){
+	get_article_data(id);
+    $('#articleModal').modal('show');
+    $('#article-modal-title').text(title);
+}
+
+function show_audio(title, id){
+	get_audio_data(id);
+    $('#audioModal').modal('show');
+    $('#audio-modal-title').text(title);
+}
+
+function get_article_data(id) {
+    var url = "/api/article/" + id + '/';
+    $.ajax({
+        url: url,
+        type: "GET",
+        success: function(data) {
+        	global_content_data = data.pages;
+        	global_content_page_number = 0;
+        	if (data.pages[global_content_page_number + 1] != undefined){
+	        	var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;"><button type="button" class="btn btn-primary" onclick="next_content_page()">Next</button></div></div>';
+	        	var article_html = data.pages[global_content_page_number] + btn_html;
+        	}else{
+        		var article_html = data.pages[global_content_page_number];
+        	}
+        	$('#article-modal-body').html(article_html);
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function next_content_page() {
+	global_content_page_number += 1;
+	if (global_content_data[global_content_page_number + 1] != undefined){
+	var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;"><button type="button" class="btn btn-primary" onclick="next_content_page()">Next</button></div></div>';
+	var article_html = global_content_data[global_content_page_number] + btn_html;
+	}else{
+		var article_html = global_content_data[global_content_page_number];
+	}
+	$('#article-modal-body').html(article_html);
+}
+
+function get_audio_data(id) {
+    var url = "/api/article/" + id + '/';
+    $.ajax({
+        url: url,
+        type: "GET",
+        success: function(data) {
+        	var audio_html = '<audio id="article_' + data.id.toString() + '" autoplay controls>' +
+		     '<source src="' + data.audio +'" /></audio>';
+	     console.log(audio_html);
+        	$('#audio-modal-body').html(audio_html);
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function clear_modal_body(body_id) {
+	$(body_id).html('');
+}
+
+// QUIZ Functions
+global_exam_data = '';
+global_is_clicked = false;
+global_question_number = 0;
+
+function show_quiz(title, slug){
+	get_exam_data(slug);
+    $('#quizModal').modal('show');
+    $('#quiz-modal-title').text(title);
+}
+
+function get_exam_data(slug){
+    // start exam
+    var exam_url = "/api/quiz/start/" + slug + "/";
+    $.ajax({
+        url: exam_url,
+        type: "GET",
+        success: function(data) {
+            global_exam_data = data;
+            first_question = data.questions[global_question_number];
+            set_question(first_question, global_question_number);
+        },
+        error: function( xhr, status, errorThrown ) {
+            var error_msg = 'Error !';
+            $('#quizModal').modal('hide');
+            $('#error-modal-title').html(error_msg);
+            $('#errorModal').modal('show');
+            console.log(errorThrown);
+        }
+    });
+}
+
+function set_question(data, question_no){
+    question_no += 1;
+    if(data.question){        
+        var q_no = '<span class="question-no">' + question_no +')&nbsp;</span>'
+        $('.question').html(data.question.text);
+        $('.q_no').html(q_no);
+        $('.question').attr('style', 'font-size: medium;');
+        $('.question-no').attr('style', 'font-size: medium;');
+
+        if(data.question.image){
+            $('.question-image').html('<img height="250px" class="img-responsive" style="float:right;" src="' + data.question.image + '">');
+            $('.question-image').prop('style', 'margin-top: 20px;');
+        }else{
+            $('.question-image').prop('style', 'display: none;');
+        }
+        $('.wrapper').removeClass('col-sm-5');
+        $('.wrapper').addClass('col-sm-12');
+        $('.passage').prop('style', 'display: none;');
+
+        for (var i = 0; i <= data.options.length -1; i++) {
+            var opt = data.options[i];
+            var opt_name = opt.name;
+            var opt_text = opt.text;
+            var opt_html = '<div class="opt col-sm-12" min-width="100%">' +
+            '<div id="opt_id_' + opt_name + '" class="answerbtn" onclick="submit_answer(\'' + data.question.id.toString() +'\',\''+ global_exam_data.id.toString() +'\',\''+ opt_name +'\')">'+ opt_name +
+            '.&nbsp;&nbsp;&nbsp;' + opt_text;
+
+            if(opt.image){
+                var img_element = '<img height="150px" src="' + opt.image + '">';
+                opt_html += '<div class="a-image" style="display: inline;">' + img_element +'</div></div></div>';
+            }else{
+                opt_html += '<div class="a-image" style="display: none;"></div></div></div>';
+            }
+            $('.options').append(opt_html);
+        }
+
+        $('.remaining-questions').html('Remaining: ' + parseInt(global_exam_data.questions.length - q_no));
+    }else{
+        // exam complete, so call endexam api
+        end_exam();
+    }
+}
+
+function end_exam(){
+	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz. Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
+    $('#quiz-modal-body').html(end_exam_btn);
+}
+
+function close_quiz_modal() {
+	$('#quizModal').modal('hide');
+}
+
+function submit_answer(question_id, quiz_id, given_answer){
+    if (global_is_clicked){
+        return false;
+    }
+    var data = {
+        'question_id': parseInt(question_id),
+        'quiz_id': parseInt(quiz_id),
+        'given_answer': given_answer
+    }
+    var submit_url = '/api/question/attempt/';
+    enable_next();
+    $.ajax({
+        url: submit_url,
+        type: "POST",
+        data: data,
+        success: function(data) {
+            console.log('success')
+            if (data.correct == 'true'){
+                // show green for given answer
+                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
+            }else{
+                // show red for given answer
+                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
+                // show green for correct answer
+                $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
+            }
+            global_is_clicked = true;
+            global_question_number += 1;
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function enable_next(){
+    $('.next').prop('disabled', false);
+}
+
+function next(){
+    var next_question = global_exam_data.questions[global_question_number];
+    reset_answer_colors();
+    if (next_question){
+        global_is_clicked = false;
+        set_question(next_question, global_question_number);
+    }else{
+        // no next question available
+        end_exam();
+    }
+}
+
+function reset_answer_colors(){
+
+    $('.answerbtn').attr('style', 'background-color: #eee');
+    $('.opt').remove();
+}
+
+</script>
+{% endblock javascript %}

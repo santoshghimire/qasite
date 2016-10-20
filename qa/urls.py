@@ -14,7 +14,7 @@ from .views import ArticleListView
 from .quiz import QuizView
 from .api import (
     StartQuizApi, QuestionApi,
-    QuestionAttemptCreate
+    QuestionAttemptCreate, ArticleDetailViewAPI
 )
 
 urlpatterns = [
@@ -22,6 +22,11 @@ urlpatterns = [
         regex=r'^$',
         view=ArticleListView.as_view(),
         name='home'
+    ),
+    url(
+        regex=r'^api/article/(?P<article_id>[-\d]+)/$',
+        view=ArticleDetailViewAPI.as_view(),
+        name='article-detail'
     ),
     url(
         regex=r'^question/create/$',

@@ -1,7 +1,11 @@
+#!/usr/bin/python
+
 """Module for apis."""
 from braces.views import LoginRequiredMixin
 from django.http import Http404
-
+import environ
+import os
+from pdf_parser import get_pages
 from rest_framework.views import APIView
 # from rest_framework.renderers import JSONRenderer
 
@@ -111,3 +115,38 @@ class QuestionAttemptCreate(LoginRequiredMixin, generics.CreateAPIView):
             data = serializer.save()
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ArticleDetailViewAPI(APIView):
+    """List of questions and fields required for an exam."""
+
+    def get(self, request, article_id, *args, **kwargs):
+        """Return an exam object."""
+        try:
+            article = Article.objects.get(
+                id=article_id
+            )
+        except:
+            raise Http404
+        data = {
+            'id': article.id,
+            'title': article.title,
+            'category': article.category.title,
+            'grade': article.grade,
+        }
+        if article.audio:
+            data['audio'] = article.audio.url
+        if article.content:
+            content_path = str(article.content.url)
+            root_dir = str(environ.Path(__file__) - 2)
+            root_dir = os.path.join(root_dir, 'qasite')
+            content_full_path = root_dir + content_path
+            images_folder = root_dir + '/media/article/images/'
+            pages = get_pages(content_full_path, images_folder=images_folder)
+            new_pages = []
+            for page in pages:
+                page = page.decode('utf8')
+                page = page.replace(images_folder, '/media/article/images/')
+                new_pages.append(page)
+            data['pages'] = new_pages
+        return Response(data)
