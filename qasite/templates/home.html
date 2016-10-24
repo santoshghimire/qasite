@@ -240,6 +240,7 @@ and (max-device-width : 800px){
 <script type="text/javascript">
 global_content_page_number = 0;
 global_content_data = '';
+global_quiz_marks = 0;
 function show_article(title, id){
 	get_article_data(id);
     $('#articleModal').modal('show');
@@ -319,6 +320,7 @@ function show_quiz(title, slug){
 
 function get_exam_data(slug){
     // start exam
+    global_quiz_marks = 0;
     var exam_url = "/api/quiz/start/" + slug + "/";
     $.ajax({
         url: exam_url,
@@ -382,7 +384,9 @@ function set_question(data, question_no){
 }
 
 function end_exam(){
-	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz. Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
+    var num_questions = global_exam_data.questions.length.toString();
+	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz.</p><p style="margin-top: 20px;">You scored <strong>' + global_quiz_marks.toString() + ' out of ' + num_questions  +
+        '</strong></p><p style="margin-top: 20px;>Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
     $('#quiz-modal-body').html(end_exam_btn);
 }
 
@@ -406,15 +410,19 @@ function submit_answer(question_id, quiz_id, given_answer){
         type: "POST",
         data: data,
         success: function(data) {
-            console.log('success')
-            if (data.correct == 'true'){
+            if (data.correct.toString() == 'true'){
                 // show green for given answer
                 $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
+                global_quiz_marks = global_quiz_marks + 1;
+                console.log('correct');
+                console.log(global_quiz_marks);
             }else{
                 // show red for given answer
                 $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
                 // show green for correct answer
                 $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
+                console.log('Incorrect');
+                console.log(global_quiz_marks);
             }
             global_is_clicked = true;
             global_question_number += 1;
