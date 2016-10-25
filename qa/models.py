@@ -4,6 +4,7 @@ from autoslug import AutoSlugField
 from django.db import models
 from django.conf import settings
 from model_utils.models import TimeStampedModel
+import os
 
 from .managers import (
     CategoryManager, ArticleManager, QuestionManager,
@@ -13,6 +14,7 @@ from .validators import (
     validate_image, validate_audio, validate_video,
     validate_file
 )
+from .tts import convert_tts
 
 
 class Category(models.Model):
@@ -91,6 +93,24 @@ class Article(models.Model):
     def __str__(self):
         """Str function."""
         return self.title
+
+    def save(self, *args, **kwargs):
+        # create directory
+        super(Article, self).save(*args, **kwargs)
+        try:
+            interview_dir_path = '/media/article/'
+            full_path = settings.MEDIA_FULL_ROOT + interview_dir_path
+            if not os.path.exists(full_path):
+                os.makedirs(full_path)
+            content_audio_file_path = full_path + '/' + str(self.id) + '.wav'
+            content_audio_mp3_file_path = full_path + '/' + str(self.id) + '.mp3'
+            convert_tts(
+                text='content_audio_text',
+                file_path=content_audio_file_path,
+                mp3_file_path=content_audio_mp3_file_path
+            )
+        except:
+            pass
 
 
 class Question(TimeStampedModel):

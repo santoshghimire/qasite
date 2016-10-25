@@ -143,6 +143,11 @@ and (max-device-width : 800px){
 			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
 			{% endif %}
 			<a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
+            {% if article.question_set %}
+            has questions
+            {% else %}
+            no questions
+            {% endif %}
 		</div>
 		</div>
 		{% endfor %}
