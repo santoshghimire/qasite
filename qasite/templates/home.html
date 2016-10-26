@@ -138,15 +138,14 @@ and (max-device-width : 800px){
 		<div class="actions">
 			<a href="#" class="action-item" onclick="show_article('{{article.title}}', '{{article.id}}')" title="Read this article."><i class="fa fa-eye white" aria-hidden="true"></i></a>
 			{% if article.audio %}
-			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
+    			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
 			{% else %}
-			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
+    			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
 			{% endif %}
-			<a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
-            {% if article.question_set %}
-            has questions
+            {% if article.question_set.all %}
+                <a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
             {% else %}
-            no questions
+                <a class="action-item" title="Quiz not available."><i class="fa fa-question grey" aria-hidden="true"></i></a>
             {% endif %}
 		</div>
 		</div>

@@ -10,6 +10,13 @@
             {{import_msg}}
         </div>        
     {% endif %}
+    {% if error_messages %} 
+      {% for err_msg in error_messages %}
+        <div class=" col-sm-12 alert alert-danger" role="alert">
+            {{err_msg}}
+        </div>        
+      {% endfor %}
+    {% endif %}
     {% if request.GET.deleted %} 
         <div class=" col-sm-12 alert alert-success" role="alert">
             Congratulations question has been deleted successfully.
@@ -29,6 +36,7 @@
         <div class="col-sm-6" style="margin-bottom: 1%;">
           <a href="{% url 'qa:question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
           <a href="#" class="btn btn-secondary" style="float: right; margin-right: 20px;" onclick="import_modal()">Import Questions</a>
+          <a href="/media/question-import-format.xlsx" class="btn btn-secondary" style="float: right; margin-right: 20px;">Export</a>
         </div>
     </form>
 
@@ -111,15 +119,6 @@
                 </div>
                 <form class="form-inline row" id="marksImportForm" method="POST" action="." enctype='multipart/form-data' style="margin-top: 20px;">{% csrf_token %}
                     <div class="form-group col-sm-12">
-                      <label for="article">Select Article: </label>
-                      <select class="form-control" id="article" name="article" required="required">
-                        {% for article in articles %}
-                        <option value="{{article.id}}">{{article.title}}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-
-                    <div class="form-group col-sm-12" style="margin-top: 20px;">
                         <label for="inputFile">File Input: </label>
                         <input type="file" id="inputFile" class="form-control" name="inputFile" accept=".xlsx,.xls,application/vnd.ms-excel" required="required"><br>
                         <p class="help-block" id="file-help">Please select the excel file here.</p>

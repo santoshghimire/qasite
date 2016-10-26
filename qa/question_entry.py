@@ -216,7 +216,7 @@ class QuestionListView(SuperuserRequiredMixin, View):
         context['end'] = end
         context['total'] = paginator.count
         context['object_list'] = queryset
-        context['articles'] = Article.objects.all().order_by('title')
+        # context['articles'] = Article.objects.all().order_by('title')
         return context
 
     def get(self, request, *args, **kwargs):
@@ -230,15 +230,23 @@ class QuestionListView(SuperuserRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         excel_file = request.FILES.get('inputFile')
-        article_id = request.POST.get('article')
-        article = Article.objects.get(id=int(article_id))
+        # article_id = request.POST.get('article')
         book = xlrd.open_workbook(file_contents=excel_file.read())
+        error_messages = []
         if book.nsheets:
             first_sheet = book.sheet_by_index(0)
-            for row in range(first_sheet.nrows):
+            for row in range(1, first_sheet.nrows):
                 row_data = first_sheet.row_values(row)
+                article_title = row_data[1]  # article title
+                try:
+                    article = Article.objects.get(title=article_title)
+                except Article.DoesNotExist:
+                    error_msg = 'ERROR : Topic {} does not exist.'.format(article_title)
+                    if error_msg not in error_messages:
+                        error_messages.append(error_msg)
+                    continue
                 text = row_data[0]  # question text
-                correct = str(row_data[1])[0]  # correct answer
+                correct = str(row_data[2])[0]  # correct answer
                 question = Question(
                     text=text, question_type='objective',
                     correct=correct, difficulty=1,
@@ -246,14 +254,17 @@ class QuestionListView(SuperuserRequiredMixin, View):
                     article=article
                 )
                 question.save()
-                for i in range(2, len(row_data)):
+                for i in range(3, len(row_data)):
                     Option.objects.create(
                         name=str(i - 1),
                         text=row_data[i],
                         question=question
                     )
         context = self.get_context_data(request)
-        context['import_msg'] = 'Bulk Question Import completed successfully !'
+        if error_messages:
+            context['error_messages'] = error_messages
+        else:
+            context['import_msg'] = 'Bulk Question Import completed successfully !'
         return render(
             request,
             self.template_name,
