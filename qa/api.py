@@ -146,6 +146,10 @@ class ArticleDetailViewAPI(APIView):
             new_pages = []
             for page in pages:
                 page = page.decode('utf8')
+                # image is present
+                page = page.replace(
+                    '<img', '<img style="float: right; margin-left: 20px;max-width:400px;"'
+                )
                 page = page.replace(images_folder, '/media/article/images/')
                 new_pages.append(page)
             data['pages'] = new_pages

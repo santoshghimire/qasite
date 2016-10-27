@@ -54,6 +54,13 @@ class Article(models.Model):
         verbose_name=_("title"),
         help_text=_("Enter the article title.")
     )
+    image = models.ImageField(
+        upload_to='article',
+        null=True,
+        blank=True,
+        validators=[validate_image],
+        help_text='Maximum file size allowed is 2Mb'
+    )
     category = models.ForeignKey(
         Category, blank=True, null=True,
         related_name='topic'
