@@ -3,9 +3,9 @@
 """Module for apis."""
 from braces.views import LoginRequiredMixin
 from django.http import Http404
-import environ
-import os
-from pdf_parser import get_pages
+# import environ
+# import os
+# from pdf_parser import get_pages
 from rest_framework.views import APIView
 # from rest_framework.renderers import JSONRenderer
 
@@ -132,25 +132,32 @@ class ArticleDetailViewAPI(APIView):
             'id': article.id,
             'title': article.title,
             'category': article.category.title,
-            'grade': article.grade,
+            'level': article.level,
         }
+        if article.level:
+            data['grade'] = article.level.grade,
+
         if article.audio:
             data['audio'] = article.audio.url
-        if article.content:
-            content_path = str(article.content.url)
-            root_dir = str(environ.Path(__file__) - 2)
-            root_dir = os.path.join(root_dir, 'qasite')
-            content_full_path = root_dir + content_path
-            images_folder = root_dir + '/media/article/images/'
-            pages = get_pages(content_full_path, images_folder=images_folder)
-            new_pages = []
-            for page in pages:
-                page = page.decode('utf8')
-                # image is present
-                page = page.replace(
-                    '<img', '<img style="float: right; margin-left: 20px;max-width:400px;"'
-                )
-                page = page.replace(images_folder, '/media/article/images/')
-                new_pages.append(page)
-            data['pages'] = new_pages
+        # if article.content:
+        #     content_path = str(article.content.url)
+        #     root_dir = str(environ.Path(__file__) - 2)
+        #     root_dir = os.path.join(root_dir, 'qasite')
+        #     content_full_path = root_dir + content_path
+        #     images_folder = root_dir + '/media/article/images/'
+        #     pages = get_pages(content_full_path, images_folder=images_folder)
+        #     new_pages = []
+        #     for page in pages:
+        #         page = page.decode('utf8')
+        #         # image is present
+        #         page = page.replace(
+        #             '<img', '<img style="float: right; margin-left: 20px;max-width:400px;"'
+        #         )
+        #         page = page.replace(images_folder, '/media/article/images/')
+        #         new_pages.append(page)
+        #     data['pages'] = new_pages
+        if article.content_formatted:
+            split = article.content_formatted.split('-- ** --')
+            # data['pages'] = [article.content_formatted]
+            data['pages'] = split
         return Response(data)

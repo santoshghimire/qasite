@@ -162,7 +162,7 @@ and (max-device-width : 800px){
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="article-modal-title"></h4>
       </div>
-      <div class="modal-body" id="article-modal-body" style="white-space: pre-wrap">
+      <div class="modal-body" id="article-modal-body">
 
       </div>
     </div><!-- /.modal-content -->
@@ -263,14 +263,10 @@ function get_article_data(id) {
         url: url,
         type: "GET",
         success: function(data) {
+            console.log(data);
         	global_content_data = data.pages;
         	global_content_page_number = 0;
-        	if (data.pages[global_content_page_number + 1] != undefined){
-	        	var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;"><button type="button" class="btn btn-primary" onclick="next_content_page()">Next</button></div></div>';
-	        	var article_html = data.pages[global_content_page_number] + btn_html;
-        	}else{
-        		var article_html = data.pages[global_content_page_number];
-        	}
+    		var article_html = get_content_page();
         	$('#article-modal-body').html(article_html);
         },
         error: function( xhr, status, errorThrown ) {
@@ -278,15 +274,28 @@ function get_article_data(id) {
         }
     });
 }
-
-function next_content_page() {
-	global_content_page_number += 1;
-	if (global_content_data[global_content_page_number + 1] != undefined){
-	var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;"><button type="button" class="btn btn-primary" onclick="next_content_page()">Next</button></div></div>';
-	var article_html = global_content_data[global_content_page_number] + btn_html;
-	}else{
-		var article_html = global_content_data[global_content_page_number];
-	}
+function get_content_page() {
+    var article_html = global_content_data[global_content_page_number];
+    var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;">';
+    if (global_content_data[global_content_page_number + 1] != undefined){
+        var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\')" style="float:right;">Next</button>';
+        btn_html += next_btn_html;
+    }
+    if (global_content_data[global_content_page_number - 1] != undefined){
+        var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\')" style="float:left;">Previous</button>';
+        btn_html += prev_btn_html;
+    }
+    btn_html += '</div></div>';
+    article_html += btn_html;
+    return article_html;
+}
+function next_content_page(type) {
+    if(type =='next'){
+        global_content_page_number += 1;
+    }else{
+        global_content_page_number -= 1;
+    }
+    var article_html = get_content_page();
 	$('#article-modal-body').html(article_html);
 }
 
@@ -416,17 +425,17 @@ function submit_answer(question_id, quiz_id, given_answer){
         success: function(data) {
             if (data.correct.toString() == 'true'){
                 // show green for given answer
-                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
+                // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
                 global_quiz_marks = global_quiz_marks + 1;
-                console.log('correct');
-                console.log(global_quiz_marks);
+                // console.log('correct');
+                // console.log(global_quiz_marks);
             }else{
                 // show red for given answer
-                $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
+                // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
                 // show green for correct answer
-                $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
-                console.log('Incorrect');
-                console.log(global_quiz_marks);
+                // $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
+                // console.log('Incorrect');
+                // console.log(global_quiz_marks);
             }
             global_is_clicked = true;
             global_question_number += 1;

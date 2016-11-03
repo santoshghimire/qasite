@@ -4,6 +4,8 @@ from autoslug import AutoSlugField
 from django.db import models
 from django.conf import settings
 from model_utils.models import TimeStampedModel
+from ckeditor_uploader.fields import RichTextUploadingField
+
 import os
 
 from .managers import (
@@ -11,10 +13,56 @@ from .managers import (
     QuizManager, QuestionAttemptManager
 )
 from .validators import (
-    validate_image, validate_audio, validate_video,
-    validate_file
+    validate_image, validate_audio, validate_video
 )
 from .tts import convert_tts
+
+
+class Grade(models.Model):
+    """
+    The grade of the students.
+    """
+
+    # Attributes
+    name = models.CharField(
+        max_length=10,
+        verbose_name=_("name"),
+        help_text=_("Enter the grade name")
+    )
+
+    def __str__(self):
+        """Method to return object name in string."""
+        return self.name
+
+
+class Level(models.Model):
+    """
+    The level of the students. There can be multiple levels
+    in one grade.
+    """
+
+    # Attributes
+    name = models.CharField(
+        max_length=10,
+        verbose_name=_("name"),
+        help_text=_("Enter the level name")
+    )
+    grade = models.ForeignKey(
+        Grade, blank=True, null=True,
+        related_name='level'
+    )
+    threshold = models.IntegerField(
+        verbose_name=_("threshold"),
+        help_text=_("Enter the threshold in percentage (max 100)")
+    )
+
+    class Meta:
+        """Class Meta."""
+        unique_together = ('name', 'grade')
+
+    def __str__(self):
+        """Method to return object name in string."""
+        return self.name
 
 
 class Category(models.Model):
@@ -65,13 +113,6 @@ class Article(models.Model):
         Category, blank=True, null=True,
         related_name='topic'
     )
-    content = models.FileField(
-        upload_to='article',
-        null=True,
-        blank=True,
-        validators=[validate_file],
-        help_text='Maximum file size allowed is 5Mb'
-    )
     audio = models.FileField(
         upload_to='article',
         null=True,
@@ -79,14 +120,15 @@ class Article(models.Model):
         validators=[validate_audio],
         help_text='Maximum file size allowed is 5Mb'
     )
-    grade = models.CharField(
-        max_length=200,
-        verbose_name=_("grade"),
-        help_text=_("Enter the grade.")
+    level = models.ForeignKey(
+        Level,
+        null=True, blank=True,
+        related_name='topic'
     )
+    content_formatted = RichTextUploadingField(null=True, blank=True)
     slug = AutoSlugField(populate_from='title', unique=True)
 
-    # Object Manager
+    # Object Managers
     objects = ArticleManager()
 
     # Meta and String
@@ -96,6 +138,7 @@ class Article(models.Model):
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
         ordering = ("title",)
+        unique_together = ('title', 'level', 'category')
 
     def __str__(self):
         """Str function."""
@@ -282,3 +325,15 @@ class QuestionAttempt(TimeStampedModel):
     def __str__(self):
         """Magic function for string."""
         return self.given_answer + ': ' + self.question.text[:20]
+
+
+class QuestionAttemptPoint(models.Model):
+    """
+    The point for multiple question attempts.
+    """
+
+    # Attributes
+    first = models.IntegerField(blank=True, null=True)
+    second = models.IntegerField(blank=True, null=True)
+    third = models.IntegerField(blank=True, null=True)
+    fourth = models.IntegerField(blank=True, null=True)

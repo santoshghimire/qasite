@@ -3,11 +3,14 @@ from django.contrib import admin
 # Register your models here.
 from .models import (
     Category, Article, Question, Option,
-    QuestionAttempt
+    QuestionAttempt, Level, Grade, QuestionAttemptPoint
 )
 
 admin.site.register(Option)
 admin.site.register(QuestionAttempt)
+admin.site.register(QuestionAttemptPoint)
+admin.site.register(Level)
+admin.site.register(Grade)
 
 
 @admin.register(Category)
@@ -18,10 +21,10 @@ class CertificateAdmin(admin.ModelAdmin):
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'grade', 'slug'
+        'title', 'level', 'slug'
     )
     search_fields = [
-        'title', 'slug', 'grade'
+        'title', 'slug', 'level'
     ]
 
 
