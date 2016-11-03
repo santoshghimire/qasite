@@ -157,7 +157,7 @@ class ArticleDetailViewAPI(APIView):
         #         new_pages.append(page)
         #     data['pages'] = new_pages
         if article.content_formatted:
-            split = article.content_formatted.split('-- ** --')
+            split = article.content_formatted.split('<hr />')
             # data['pages'] = [article.content_formatted]
             data['pages'] = split
         return Response(data)
