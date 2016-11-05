@@ -7,6 +7,8 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from qa.models import Level
+
 
 @python_2_unicode_compatible
 class User(AbstractUser):
@@ -14,6 +16,9 @@ class User(AbstractUser):
     # First Name and Last Name do not cover name patterns
     # around the globe.
     name = models.CharField(_('Name of User'), blank=True, max_length=255)
+    level = models.ForeignKey(Level, verbose_name=_("level"), null=True, blank=True)
+    # read_articles =
+    # list of read articles
 
     def __str__(self):
         return self.username

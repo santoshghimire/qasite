@@ -318,12 +318,14 @@ function get_audio_data(id) {
 
 function clear_modal_body(body_id) {
 	$(body_id).html('');
+    global_content_page_number = 0;
 }
 
 // QUIZ Functions
 global_exam_data = '';
-global_is_clicked = false;
+global_is_clicked = 0;
 global_question_number = 0;
+global_total_points = 0;
 
 function show_quiz(title, slug){
 	get_exam_data(slug);
@@ -354,6 +356,7 @@ function get_exam_data(slug){
 }
 
 function set_question(data, question_no){
+    global_is_clicked = 0;
     question_no += 1;
     if(data.question){        
         var q_no = '<span class="question-no">' + question_no +')&nbsp;</span>'
@@ -398,8 +401,9 @@ function set_question(data, question_no){
 
 function end_exam(){
     var num_questions = global_exam_data.questions.length.toString();
-	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz.</p><p style="margin-top: 20px;">You scored <strong>' + global_quiz_marks.toString() + ' out of ' + num_questions  +
-        '</strong></p><p style="margin-top: 20px;>Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
+    var quiz_total_points = global_total_points * num_questions;
+	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz.</p><p style="margin-top: 20px;">You scored <strong>' + global_quiz_marks.toString() + ' out of ' + quiz_total_points +
+        ' Points.</strong></p><p style="margin-top: 20px;>Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
     $('#quiz-modal-body').html(end_exam_btn);
 }
 
@@ -408,13 +412,15 @@ function close_quiz_modal() {
 }
 
 function submit_answer(question_id, quiz_id, given_answer){
-    if (global_is_clicked){
+    if (global_is_clicked > 4){
+        // do not submit if clicked more than 4 times
         return false;
     }
     var data = {
         'question_id': parseInt(question_id),
         'quiz_id': parseInt(quiz_id),
-        'given_answer': given_answer
+        'given_answer': given_answer,
+        'attempt_count': global_is_clicked + 1
     }
     var submit_url = '/api/question/attempt/';
     enable_next();
@@ -423,10 +429,12 @@ function submit_answer(question_id, quiz_id, given_answer){
         type: "POST",
         data: data,
         success: function(data) {
+            console.log(data);
             if (data.correct.toString() == 'true'){
                 // show green for given answer
                 // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
-                global_quiz_marks = global_quiz_marks + 1;
+                global_quiz_marks = global_quiz_marks + data.point;
+                global_total_points = data.total_points;
                 // console.log('correct');
                 // console.log(global_quiz_marks);
             }else{
@@ -437,7 +445,7 @@ function submit_answer(question_id, quiz_id, given_answer){
                 // console.log('Incorrect');
                 // console.log(global_quiz_marks);
             }
-            global_is_clicked = true;
+            global_is_clicked += 1;
             global_question_number += 1;
         },
         error: function( xhr, status, errorThrown ) {

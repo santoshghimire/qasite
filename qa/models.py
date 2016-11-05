@@ -310,6 +310,7 @@ class QuestionAttempt(TimeStampedModel):
     given_answer = models.CharField(max_length=8000)
     is_correct = models.BooleanField()
     attempted = models.BooleanField(default=False)
+    point = models.IntegerField(null=True, blank=True)
     quiz = models.ForeignKey(Quiz)
 
     # Object Manager
@@ -337,3 +338,16 @@ class QuestionAttemptPoint(models.Model):
     second = models.IntegerField(blank=True, null=True)
     third = models.IntegerField(blank=True, null=True)
     fourth = models.IntegerField(blank=True, null=True)
+
+
+class ArticleHistory(models.Model):
+    """
+    The history of article for each user.
+    """
+
+    # Attributes
+    reading = models.BooleanField(default=False)
+    listening = models.BooleanField(default=False)
+    quiz = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    article = models.ForeignKey(Article, related_name='history')
