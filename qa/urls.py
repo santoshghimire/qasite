@@ -8,7 +8,8 @@ from django.conf.urls.static import static
 
 from .question_entry import (
     QuestionCreateView, QuestionUpdateView,
-    QuestionDeleteView, QuestionListView
+    QuestionDeleteView, QuestionListView,
+    QuestionFormatExport
 )
 from .views import ArticleListView
 from .quiz import QuizView
@@ -47,6 +48,11 @@ urlpatterns = [
         regex=r'^question/list/$',
         view=QuestionListView.as_view(),
         name='qlist'
+    ),
+    url(
+        regex=r'^question/format/export/$',
+        view=QuestionFormatExport.as_view(),
+        name='question-format-export'
     ),
     url(
         regex=r'^quiz/(?P<article_id>[-\w]+)/$',

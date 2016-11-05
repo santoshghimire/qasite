@@ -36,7 +36,7 @@
         <div class="col-sm-6" style="margin-bottom: 1%;">
           <a href="{% url 'qa:question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
           <a href="#" class="btn btn-secondary" style="float: right; margin-right: 20px;" onclick="import_modal()">Import Questions</a>
-          <a href="/media/question-import-format.xlsx" class="btn btn-secondary" style="float: right; margin-right: 20px;">Export</a>
+          <a href="{% url 'qa:question-format-export' %}" class="btn btn-secondary" style="float: right; margin-right: 20px;">Export</a>
         </div>
     </form>
 

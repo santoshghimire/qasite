@@ -1,6 +1,7 @@
 """Module for question entry."""
 import json
 import xlrd
+import xlwt
 # from django.db.models import Q
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
@@ -270,3 +271,35 @@ class QuestionListView(SuperuserRequiredMixin, View):
             self.template_name,
             context
         )
+
+
+class QuestionFormatExport(View):
+    """Module to export question import format."""
+
+    def get(self, *args, **kwargs):
+        style0 = xlwt.easyxf(
+            'font: name FreeSans, bold on')
+        # style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Sheet1')
+        header = [
+            'Question', 'Article ID', 'Level', 'Correct',
+            'Option 1', 'Option 2', 'Option 3', 'Option 4'
+        ]
+        for count, i in enumerate(header):
+            ws.write(0, count, i, style0)
+        ws2 = wb.add_sheet('Sheet2')
+        for count, j in enumerate(['Article Name', 'Level', 'Category', 'Article ID']):
+            ws2.write(0, count, j, style0)
+        articles = Article.objects.all().order_by('level', 'title')
+        for count, article in enumerate(articles):
+            ws2.write(count + 1, 0, article.title)
+            ws2.write(count + 1, 1, str(article.level))
+            ws2.write(count + 1, 2, str(article.category))
+            ws2.write(count + 1, 3, article.id)
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        filename = 'question-import-format.xlsx'
+        response['Content-Disposition'] = 'attachment; filename=' + filename
+        wb.save(response)
+        return response
