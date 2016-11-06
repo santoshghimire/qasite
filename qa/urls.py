@@ -11,7 +11,7 @@ from .question_entry import (
     QuestionDeleteView, QuestionListView,
     QuestionFormatExport
 )
-from .views import ArticleListView
+from .views import ArticleListView, LevelUpView
 from .quiz import QuizView
 from .api import (
     StartQuizApi, QuestionApi,
@@ -59,7 +59,11 @@ urlpatterns = [
         view=QuizView.as_view(),
         name='start-quiz'
     ),
-
+    url(
+        regex=r'^level/up/$',
+        view=LevelUpView.as_view(),
+        name='level-up'
+    ),
     url(
         regex=r'^api/quiz/start/(?P<slug>[-\w]+)/$',
         view=StartQuizApi.as_view(),
