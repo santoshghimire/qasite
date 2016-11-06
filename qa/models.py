@@ -303,6 +303,28 @@ class Quiz(TimeStampedModel):
             self.category.title, self.user.username, self.id)
 
 
+class QuizResult(TimeStampedModel):
+    """
+    Stores a exam given by a User. Quizs are unique to each of the Users.
+    """
+
+    quiz = models.OneToOneField(Quiz)
+    obtained_score = models.IntegerField(null=True, blank=True)
+    total_score = models.IntegerField(null=True, blank=True)
+
+    # Meta and String
+    class Meta:
+        """Class Meta."""
+        verbose_name = _("Quiz Result")
+        verbose_name_plural = _("Quiz Results")
+
+    def __str__(self):
+        """Str magic function."""
+        return "{0} Quiz Result - {1} - {2} of {3}".format(
+            self.quiz.article.title, str(self.quiz.user),
+            self.obtained_score, self.total_score)
+
+
 class QuestionAttempt(TimeStampedModel):
     """Stores the question, attempt_time and given_answer by user."""
 

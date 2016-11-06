@@ -3,7 +3,8 @@ from django.contrib import admin
 # Register your models here.
 from .models import (
     Category, Article, Question, Option,
-    QuestionAttempt, Level, Grade, QuestionAttemptPoint
+    QuestionAttempt, Level, Grade, QuestionAttemptPoint,
+    Quiz, QuizResult
 )
 
 admin.site.register(Option)
@@ -11,6 +12,8 @@ admin.site.register(QuestionAttempt)
 admin.site.register(QuestionAttemptPoint)
 admin.site.register(Level)
 admin.site.register(Grade)
+admin.site.register(Quiz)
+admin.site.register(QuizResult)
 
 
 @admin.register(Category)

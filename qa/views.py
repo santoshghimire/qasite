@@ -3,7 +3,22 @@ from django.views.generic import ListView, View
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 
-from .models import Article, Level
+from .models import Article, Level, QuizResult
+
+
+def get_level_percent(user):
+    level_obtained_score = 0
+    level_total_score = 0
+    articles = Article.objects.filter(level=user.level)
+    for article in articles:
+        quiz_results = QuizResult.objects.filter(quiz__article=article)
+        obtained_score = max([i.obtained_score for i in quiz_results])
+        total_score = max([i.total_score for i in quiz_results])
+        level_obtained_score += obtained_score
+        level_total_score += total_score
+    level_percent = int(level_obtained_score / level_total_score * 100)
+    passes_threshold = level_percent >= user.level.threshold
+    return passes_threshold
 
 
 class ArticleListView(LoginRequiredMixin, ListView):
@@ -20,6 +35,9 @@ class ArticleListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(
             ArticleListView, self).get_context_data(**kwargs)
+        passes_threshold = get_level_percent(self.request.user)
+        if passes_threshold:
+            context['passes_threshold'] = True
         return context
 
 
@@ -35,12 +53,14 @@ class LevelUpView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         # check if threshold is met
-        lvl_name = int(request.user.level.name) + 1
-        try:
-            next_level = Level.objects.get(name=str(lvl_name))
-        except Level.DoesNotExist:
-            next_level = None
-        if next_level:
-            request.user.level = next_level
-            request.user.save()
+        passes_threshold = get_level_percent(request.user)
+        if passes_threshold:
+            lvl_name = int(request.user.level.name) + 1
+            try:
+                next_level = Level.objects.get(name=str(lvl_name))
+            except Level.DoesNotExist:
+                next_level = None
+            if next_level:
+                request.user.level = next_level
+                request.user.save()
         return HttpResponseRedirect(reverse_lazy('qa:home'))

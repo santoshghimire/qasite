@@ -129,11 +129,13 @@ and (max-device-width : 800px){
 
 {% block content %}
 <h1 class="title">Available Articles</h1>
+{% if passes_threshold %}
 <div class="row">
     <div class="col-md-12">
     <a href="{% url 'qa:level-up' %}" class="btn btn-secondary" style="float: right;">Level Up</a>
     </div>
 </div>
+{% endif %}
 <div class="row">
 	<div class="col-md-12">
 		{% for article in object_list %}

@@ -3,7 +3,8 @@ from django.http import Http404
 from rest_framework import serializers
 
 from .models import (
-    QuestionAttempt, Question, Quiz, QuestionAttemptPoint
+    QuestionAttempt, Question, Quiz, QuestionAttemptPoint,
+    QuizResult
 )
 
 
@@ -39,10 +40,11 @@ class QuestionAttemptSerializer(serializers.Serializer):
             raise Http404
         point = 0
         total_points = 0
+        if points:
+            total_points = points.first
         if question.correct.lower() == validated_data['given_answer'].lower():
             is_correct = True
             if points:
-                total_points = points.first
                 attempt_count = int(validated_data['attempt_count'])
                 if attempt_count == 1:
                     point = points.first
@@ -79,6 +81,20 @@ class QuestionAttemptSerializer(serializers.Serializer):
                 quiz=quiz
             )
             question_attempt.save()
+
+        # save quiz result
+        quiz_result, created = QuizResult.objects.get_or_create(
+            quiz=quiz
+        )
+        all_question_attempts = QuestionAttempt.objects.filter(
+            quiz=quiz
+        )
+        full_marks = total_points * len(quiz.questions.all())
+        obtained_marks = sum([i.point for i in all_question_attempts])
+        quiz_result.total_score = full_marks
+        quiz_result.obtained_score = obtained_marks
+        quiz_result.save()
+
         data = {
             'correct': is_correct,
             'correct_option': question.correct,
@@ -87,4 +103,3 @@ class QuestionAttemptSerializer(serializers.Serializer):
         }
         data.update(validated_data)
         return data
-        # return question_attempt
