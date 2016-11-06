@@ -12,11 +12,16 @@ def get_level_percent(user):
     articles = Article.objects.filter(level=user.level)
     for article in articles:
         quiz_results = QuizResult.objects.filter(quiz__article=article)
-        obtained_score = max([i.obtained_score for i in quiz_results])
-        total_score = max([i.total_score for i in quiz_results])
+        obs = [i.obtained_score for i in quiz_results]
+        obtained_score = max(obs) if obs else 0
+        ts = [i.total_score for i in quiz_results]
+        total_score = max(ts) if ts else 0
         level_obtained_score += obtained_score
         level_total_score += total_score
-    level_percent = int(level_obtained_score / level_total_score * 100)
+    try:
+        level_percent = int(level_obtained_score / level_total_score * 100)
+    except:
+        level_percent = 0
     passes_threshold = level_percent >= user.level.threshold
     return passes_threshold
 
