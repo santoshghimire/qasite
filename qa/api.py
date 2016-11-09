@@ -131,11 +131,10 @@ class ArticleDetailViewAPI(APIView):
         data = {
             'id': article.id,
             'title': article.title,
-            'category': article.category.title,
-            'level': article.level,
+            'category': article.category.title
         }
         if article.level:
-            data['grade'] = article.level.grade,
+            data['grade'] = article.level.grade.name,
 
         if article.audio:
             data['audio'] = article.audio.url
