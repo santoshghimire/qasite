@@ -11,6 +11,9 @@ class ArticleManager(models.Manager):
     def get_queryset(self):
         return super(ArticleManager, self).get_queryset()
 
+    def active(self):
+        return self.filter(active=True)
+
 
 class QuestionManager(models.Manager):
     def get_queryset(self):

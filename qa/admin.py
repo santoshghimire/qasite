@@ -24,11 +24,12 @@ class CertificateAdmin(admin.ModelAdmin):
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'level', 'slug'
+        'title', 'level', 'slug', 'created', 'active'
     )
     search_fields = [
-        'title', 'slug', 'level'
+        'title', 'slug', 'level__name'
     ]
+    list_editable = ('active', )
 
 
 @admin.register(Question)

@@ -92,7 +92,7 @@ class Category(models.Model):
         return self.title
 
 
-class Article(models.Model):
+class Article(TimeStampedModel):
     """
     This module contains the information about the Article in a subject.
 
@@ -127,6 +127,7 @@ class Article(models.Model):
     )
     content_formatted = RichTextUploadingField(null=True, blank=True)
     slug = AutoSlugField(populate_from='title', unique=True)
+    active = models.BooleanField(default=False)
 
     # Object Managers
     objects = ArticleManager()
@@ -248,6 +249,11 @@ class Question(TimeStampedModel):
     def __str__(self):
         """Str function."""
         return self.text
+
+    def delete(self):
+        for opt in self.option_set.all():
+            opt.delete()
+        super(Question, self).delete()
 
 
 class Option(models.Model):

@@ -81,7 +81,7 @@ class StartQuizApi(APIView):
         )
         # set questions
         quiz.save()
-        for i in article.question_set.all():
+        for i in article.question_set.all().order_by('id'):
             quiz.questions.add(i)
 
         if not quiz.questions.all():

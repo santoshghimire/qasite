@@ -33,8 +33,11 @@ class ArticleListView(LoginRequiredMixin, ListView):
     template_name = 'home.html'
 
     def get_queryset(self):
+        if not self.request.user.level:
+            level = Level.objects.get(name='1')
+            self.request.user.level = level
         level = self.request.user.level
-        queryset = Article.objects.filter(level=level)
+        queryset = Article.objects.active().filter(level=level)
         return queryset
 
     def get_context_data(self, **kwargs):

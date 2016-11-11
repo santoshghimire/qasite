@@ -13,9 +13,23 @@
 	padding-top: 20px;
 	padding-bottom: 20px;
 }
+.article-thumb{
+    height: 200px;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+.article-thumb-default{
+    height: 200px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 5px solid white;
+    border-radius: 5px;
+}
 .article-title{
 	font-size: 20px;
 	color: white;
+    margin-bottom: 10px;
 }
 .white{
 	color: white;
@@ -137,23 +151,32 @@ and (max-device-width : 800px){
 </div>
 {% endif %}
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-12 col-sm-12">
 		{% for article in object_list %}
-		<div class="col-md-3 article offset-md-1">
-		<p class="article-title">{{article}}</p>
-		<div class="actions">
-			<a href="#" class="action-item" onclick="show_article('{{article.title}}', '{{article.id}}')" title="Read this article."><i class="fa fa-eye white" aria-hidden="true"></i></a>
-			{% if article.audio %}
-    			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
-			{% else %}
-    			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
-			{% endif %}
-            {% if article.question_set.all %}
-                <a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
+		<div class="col-md-3 col-sm-4 article offset-md-1 offset-sm-2">
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+            {% if article.image %}
+            <img src="{{article.image.url}}" class="img-responsive article-thumb">
             {% else %}
-                <a class="action-item" title="Quiz not available."><i class="fa fa-question grey" aria-hidden="true"></i></a>
+            <img src="/media/article/default.png" class="img-responsive article-thumb-default">
             {% endif %}
-		</div>
+                </div>
+            </div>
+    		<p class="article-title">{{article}}</p>
+    		<div class="actions">
+    			<a href="#" class="action-item" onclick="show_article('{{article.title}}', '{{article.id}}')" title="Read this article."><i class="fa fa-eye white" aria-hidden="true"></i></a>
+    			{% if article.audio %}
+        			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
+    			{% else %}
+        			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
+    			{% endif %}
+                {% if article.question_set.all %}
+                    <a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
+                {% else %}
+                    <a class="action-item" title="Quiz not available."><i class="fa fa-question grey" aria-hidden="true"></i></a>
+                {% endif %}
+    		</div>
 		</div>
 		{% endfor %}
 	</div>
@@ -168,7 +191,7 @@ and (max-device-width : 800px){
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="article-modal-title"></h4>
       </div>
-      <div class="modal-body" id="article-modal-body">
+      <div class="modal-body" id="article-modal-body" style="max-height: 400px;">
 
       </div>
     </div><!-- /.modal-content -->
@@ -215,7 +238,7 @@ and (max-device-width : 800px){
 	                        </div>
 	                        <div class="question-image col-sm-6" style="display: none;"></div>
 	                        <div class="action col-sm-12">
-	                            <button type="button" class="btn btn-success next " disabled="disabled" onclick="next()">Next</button>
+	                            <button type="button" class="btn btn-primary next " disabled="disabled" onclick="next()">Next</button>
 	                        </div>
 	                    </div>
 	                    <div class="passage col-sm-7" style="display: none;">
@@ -269,7 +292,7 @@ function get_article_data(id) {
         url: url,
         type: "GET",
         success: function(data) {
-            console.log(data);
+            // console.log(data);
         	global_content_data = data.pages;
         	global_content_page_number = 0;
     		var article_html = get_content_page();
@@ -286,6 +309,9 @@ function get_content_page() {
     if (global_content_data[global_content_page_number + 1] != undefined){
         var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\')" style="float:right;">Next</button>';
         btn_html += next_btn_html;
+    }else{
+        var finish_btn_html = '<button type="button" class="btn btn-primary" onclick="close_article_modal()" style="float:right;">Finish</button>';
+        btn_html += finish_btn_html;
     }
     if (global_content_data[global_content_page_number - 1] != undefined){
         var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\')" style="float:left;">Previous</button>';
@@ -313,7 +339,7 @@ function get_audio_data(id) {
         success: function(data) {
         	var audio_html = '<audio id="article_' + data.id.toString() + '" autoplay controls>' +
 		     '<source src="' + data.audio +'" /></audio>';
-	     console.log(audio_html);
+	     // console.log(audio_html);
         	$('#audio-modal-body').html(audio_html);
         },
         error: function( xhr, status, errorThrown ) {
@@ -334,19 +360,53 @@ global_question_number = 0;
 global_total_points = 0;
 
 function show_quiz(title, slug){
+    set_quiz_modal();
 	get_exam_data(slug);
     $('#quizModal').modal('show');
     $('#quiz-modal-title').text(title);
 }
 
+function set_quiz_modal() {
+    // body...
+    var quiz_body = '<div class="row examdiv outer" id="examMainDiv">'+
+                    '<div class="inner">'+
+                        '<div class="wrapper col-sm-12">'+
+                            '<div class="question-main">'+
+                                '<div class="row">'+
+                                    '<div class="q_no col-sm-1" style="width: 0.1%;"></div>'+
+                                    '<div class="question col-sm-11"></div>'+
+                                '</div>'+
+                            '</div>'+
+                            '<div class="options col-sm-6">'+
+                                '<div class="ans-text col-sm-12" style="display:none">'+
+                                    '<textarea id="subjective-answer" class="form-control" rows="10" cols="40" placeholder="Write tha answer here."></textarea>' +
+                                '</div>'+
+
+                            '</div>'+
+                            '<div class="question-image col-sm-6" style="display: none;"></div>'+
+                            '<div class="action col-sm-12">'+
+                                '<button type="button" class="btn btn-primary next " disabled="disabled" onclick="next()">Next</button>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div class="passage col-sm-7" style="display: none;">'+
+                        '</div>'+
+'                        '+
+                    '</div>'+
+                '</div>';
+    $('#quiz-modal-body').html(quiz_body);
+}
+
 function get_exam_data(slug){
     // start exam
+    console.log(slug);
     global_quiz_marks = 0;
+    global_question_number = 0;
     var exam_url = "/api/quiz/start/" + slug + "/";
     $.ajax({
         url: exam_url,
         type: "GET",
         success: function(data) {
+            console.log(data);
             global_exam_data = data;
             first_question = data.questions[global_question_number];
             set_question(first_question, global_question_number);
@@ -362,6 +422,8 @@ function get_exam_data(slug){
 }
 
 function set_question(data, question_no){
+    console.log(data);
+    console.log(question_no);
     global_is_clicked = 0;
     question_no += 1;
     if(data.question){        
@@ -417,6 +479,10 @@ function close_quiz_modal() {
 	$('#quizModal').modal('hide');
 }
 
+function close_article_modal() {
+    $('#articleModal').modal('hide');
+}
+
 function submit_answer(question_id, quiz_id, given_answer){
     if (global_is_clicked > 4){
         // do not submit if clicked more than 4 times
@@ -435,7 +501,6 @@ function submit_answer(question_id, quiz_id, given_answer){
         type: "POST",
         data: data,
         success: function(data) {
-            console.log(data);
             if (data.correct.toString() == 'true'){
                 // show green for given answer
                 // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');

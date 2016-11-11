@@ -2,7 +2,7 @@
 import json
 import xlrd
 import xlwt
-# from django.db.models import Q
+from urllib import urlencode
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.views.generic import View
@@ -217,7 +217,15 @@ class QuestionListView(SuperuserRequiredMixin, View):
         context['end'] = end
         context['total'] = paginator.count
         context['object_list'] = queryset
-        # context['articles'] = Article.objects.all().order_by('title')
+
+        current_path = request.path
+        query_params = dict(request.GET)
+        filtered_query_params = {key: value[0] for key, value in query_params.items() if key != 'page'}
+        params = urlencode(filtered_query_params)
+        if params:
+            current_path += '?' + params
+        current_path = current_path + '?' if current_path.find('?') == -1 else current_path + '&'
+        context['current_path'] = current_path
         return context
 
     def get(self, request, *args, **kwargs):
@@ -238,11 +246,11 @@ class QuestionListView(SuperuserRequiredMixin, View):
             first_sheet = book.sheet_by_index(0)
             for row in range(1, first_sheet.nrows):
                 row_data = first_sheet.row_values(row)
-                article_title = row_data[1]  # article title
+                article_id = int(float(str(row_data[1])))  # article title
                 try:
-                    article = Article.objects.get(title=article_title)
+                    article = Article.objects.get(id=article_id)
                 except Article.DoesNotExist:
-                    error_msg = 'ERROR : Topic {} does not exist.'.format(article_title)
+                    error_msg = 'ERROR : Topic ID {} does not exist.'.format(article_id)
                     if error_msg not in error_messages:
                         error_messages.append(error_msg)
                     continue
@@ -257,7 +265,7 @@ class QuestionListView(SuperuserRequiredMixin, View):
                 question.save()
                 for i in range(3, len(row_data)):
                     Option.objects.create(
-                        name=str(i - 1),
+                        name=str(i - 2),
                         text=row_data[i],
                         question=question
                     )
@@ -284,7 +292,7 @@ class QuestionFormatExport(View):
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Sheet1')
         header = [
-            'Question', 'Article ID', 'Level', 'Correct',
+            'Question', 'Article ID', 'Correct',
             'Option 1', 'Option 2', 'Option 3', 'Option 4'
         ]
         for count, i in enumerate(header):
@@ -299,7 +307,7 @@ class QuestionFormatExport(View):
             ws2.write(count + 1, 2, str(article.category))
             ws2.write(count + 1, 3, article.id)
         response = HttpResponse(content_type='application/vnd.ms-excel')
-        filename = 'question-import-format.xlsx'
+        filename = 'question-import-format.xls'
         response['Content-Disposition'] = 'attachment; filename=' + filename
         wb.save(response)
         return response
