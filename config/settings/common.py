@@ -15,7 +15,11 @@ import environ
 ROOT_DIR = environ.Path(__file__) - 3  # (qasite/config/settings/common.py - 3 = qasite/)
 APPS_DIR = ROOT_DIR.path('qasite')
 
+env_path = str(ROOT_DIR.path('.env'))
 env = environ.Env()
+environ.Env.read_env(env_path)
+
+# env = environ.Env()
 
 # APP CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -87,7 +91,7 @@ FIXTURE_DIRS = (
 
 # EMAIL CONFIGURATION
 # ------------------------------------------------------------------------------
-# EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
 
 # MANAGER CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -261,11 +265,11 @@ CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.j
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = 'pillow'
 
-DEFAULT_EMAIL_FROM = 'info@kidzschool.com'
+DEFAULT_EMAIL_FROM = 'no-reply@kidzschool.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'santosh.ghimire33@gmail.com'
-EMAIL_HOST_PASSWORD = 'Encrypted^@2'
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
-EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
+# EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
