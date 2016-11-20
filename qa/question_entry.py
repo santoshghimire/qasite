@@ -189,12 +189,15 @@ class QuestionListView(SuperuserRequiredMixin, View):
     def get_context_data(self, request):
         context = {}
         search_text = self.request.GET.get('q', '')
+        topics = self.request.GET.getlist('topic', [])
+        topics = [int(i) for i in topics]
+        filter_dict = {}
         if search_text:
-            queryset = Question.objects.filter(
-                text__icontains=search_text
-            ).order_by('article')
-        else:
-            queryset = Question.objects.all().order_by('article')
+            filter_dict['text__icontains'] = search_text
+        if topics:
+            filter_dict['article__in'] = topics
+        queryset = Question.objects.filter(**filter_dict).order_by('article')
+        # queryset = Question.objects.all().order_by('article')
 
         page_limit = 30
         paginator = Paginator(queryset, page_limit)  # Show 30 applications per page
@@ -210,10 +213,10 @@ class QuestionListView(SuperuserRequiredMixin, View):
             # If page is out of range (e.g. 9999), deliver last page of results.
             page = paginator.num_pages
             queryset = paginator.page(page)
-
-        context['start'] = (page - 1) * page_limit + 1
+        start = (page - 1) * page_limit
         end = page * page_limit
         end = paginator.count if end > paginator.count else end
+        context['start'] = start + 1 if end else start
         context['end'] = end
         context['total'] = paginator.count
         context['object_list'] = queryset
@@ -226,6 +229,9 @@ class QuestionListView(SuperuserRequiredMixin, View):
             current_path += '?' + params
         current_path = current_path + '?' if current_path.find('?') == -1 else current_path + '&'
         context['current_path'] = current_path
+        context['selected_topics'] = topics
+        context['articles'] = Article.objects.active().order_by(
+            'level__name', 'title')
         return context
 
     def get(self, request, *args, **kwargs):
@@ -297,6 +303,14 @@ class QuestionFormatExport(View):
         ]
         for count, i in enumerate(header):
             ws.write(0, count, i, style0)
+        questions = Question.objects.all().order_by('article__id')
+        for row, question in enumerate(questions):
+            ws.write(row + 1, 0, question.text)
+            ws.write(row + 1, 1, question.article.id)
+            ws.write(row + 1, 2, question.correct)
+            options = question.option_set.all().order_by('name')
+            for opt_count, opt in enumerate(options):
+                ws.write(row + 1, opt_count + 3, opt.text)
         ws2 = wb.add_sheet('Sheet2')
         for count, j in enumerate(['Article Name', 'Level', 'Category', 'Article ID']):
             ws2.write(0, count, j, style0)

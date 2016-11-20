@@ -4,9 +4,7 @@
 {% block title %} Question Bank {% endblock title %}
 
 {% block content %}
-<div class="page-header">
     <h1>Question Bank</h1>
-</div>
 <div class="row">
     {% if import_msg %} 
         <div class=" col-sm-12 alert alert-success" role="alert">
@@ -30,20 +28,39 @@
             Congratulations question has been updated successfully.
         </div>        
     {% endif %}
-    <form class="col-sm-12 " action="." method='GET' style="margin-top:5%;margin-bottom:1%;">
-        <div class="col-sm-6" style="margin-bottom: 1%;">
-            <div class="input-group">
-                <input type="text" id="searchText" value="{{request.GET.q}}" class="form-control" placeholder="Search for..." name="q">
-            </div>
-        </div>
-        <div class="col-sm-6" style="margin-bottom: 1%;">
+    <div class="col-sm-12" style="margin-top:30px;margin-bottom:1%;">
+        <div class="col-sm-6 col-sm-push-6" style="margin-bottom: 10px;">
           <a href="{% url 'qa:question-create' %}" class="btn btn-primary" style="float: right;">Add Question</a>
           <a href="#" class="btn btn-secondary" style="float: right; margin-right: 20px;" onclick="import_modal()">Import Questions</a>
           <a href="{% url 'qa:question-format-export' %}" class="btn btn-secondary" style="float: right; margin-right: 20px;">Export</a>
         </div>
-    </form>
-
-    <div class="col-sm-12 " style="margin-top:1%;margin-bottom:1%;">
+    </div>
+    <div class="col-sm-3 highlight" style="margin-top:10px;margin-bottom:10px;border: 1px solid #ccc; padding: 10px;border-radius: 15px;">
+        <div class="row">
+        <div class="col-sm-12">
+            <form action="." method='GET' style="margin-top:30px;margin-bottom:1%;">
+            <div>
+              <p style="font-size: 16px;font-weight: 800;display:inline;">Filters</p>
+              <button type="submit" class="btn btn-primary" style="float: right;display: inline;margin-top:-10px;"><i class="fa fa-search"></i></button>
+            </div>
+            <hr/>
+                <div style="margin-bottom: 10px;">
+                    <div class="input-group">
+                        <input type="text" id="searchText" value="{{request.GET.q}}" class="form-control" placeholder="Search for..." name="q">
+                    </div>
+                </div>
+                <div class="filter-title">
+                    {% for article in articles %}
+                      <input class="topicInput" value="{{article.id}}" type="checkbox" aria-label="English" name="topic" {% if article.id in selected_topics %} checked="checked" {% endif %}>
+                      <span class="item-title">{{article.title}}</span>
+                      <br/>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>          
+        </div>
+    </div>
+    <div class="col-sm-9 " style="margin-top:10px;margin-bottom:10px;">
             {% for quest in object_list %}
             <div class="highlight" style="margin-top:10px;min-height:100px;">
                 <p> {{forloop.counter|add:"-1"|add:start}}) <a href="{% url 'qa:question-update' quest.id %}">{{quest.text}}</a></p>

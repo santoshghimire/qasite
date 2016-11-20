@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Home - KIDZ SCHOOL{% endblock title %}</title>
+  <title>{% block title %}Home - Reading Comprehension App{% endblock title %}</title>
   
   <!-- PLUGINS CSS STYLE -->
   <link href="/static/plugins/jquery-ui/jquery-ui.css" rel="stylesheet">
@@ -69,10 +69,6 @@
               {% if request.user.is_superuser %}
                 <li><i class="fa fa-book bg-color-1" aria-hidden="true"></i><a href="{% url 'qa:qlist' %}">Question Bank</a></li>
                 <li><i class="fa fa-user bg-color-2" aria-hidden="true"></i><a href="/admin/">Admin</a></li>
-              {% else %}
-              <li><i class="fa fa-envelope bg-color-1" aria-hidden="true"></i> <a href="mailto:info@yourdomain.com">info@yourdomain.com</a></li>
-              <li><i class="fa fa-phone bg-color-2" aria-hidden="true"></i> +1 234 567 8900</li>
-              <li><i class="fa fa-clock-o bg-color-6" aria-hidden="true"></i> Open: 9am - 6pm</li>
               {% endif %}
               </ul>
             </div>
@@ -101,175 +97,14 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><img src="/static/img/logo-school.png" alt="Kidz School"></a>
-          </div>
-
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav navbar-right">
-              <li class="active dropdown singleDrop color-1">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-home bg-color-1" aria-hidden="true"></i> <span>Home</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-left">
-                  <li class="active"><a href="index-v1.html">Kidz School</a></li>
-                  <li><a href="index-v2.html">Kidz Store</a></li>
-                  <li><a href="index-v3.html">Kidz Daycare</a></li>
-                </ul>
-              </li>
-              <li class="dropdown singleDrop color-3">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-list-ul bg-color-3" aria-hidden="true"></i> <span>pages</span></a>
-                <ul class="dropdown-menu dropdown-menu-left">
-                  <li><a href="about_us.html">About</a></li>
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Team<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="teachers.html">Teachers</a></li>
-                      <li><a href="teachers-details.html">Teacher Details</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="testimonial.html">Testimonial</a></li>
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Events <i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="all-events.html">All Events</a></li>
-                      <li><a href="single-event-left-sidebar.html">Single Event Left Sidebar</a></li>
-                      <li><a href="single-event-right-sidebar.html">Single Event Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="photo-gallery.html">Photo Gallery</a></li>
-                  <li><a href="pricing-table.html">Pricing Table</a></li>
-                  <li><a href="services.html">Services</a></li>
-                  <li><a href="service-details.html">Services Details</a></li>
-                  <li><a href="search-result.html">Search Results</a></li>
-                  <li><a href="contact-us.html">Contact Us</a></li>
-                  <li><a href="faq.html">FAQ</a></li>
-                  <li><a href="sign-up-or-login.html">Sign Up / Login</a></li>
-                  <li><a href="404.html">Error 404</a></li>
-                  <li><a href="coming-soon.html">Coming Soon</a></li>
-                </ul>
-              </li>
-              <li class=" dropdown megaDropMenu color-2">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-close-others="true" aria-expanded="false">
-                  <i class="fa fa-file-text-o bg-color-2" aria-hidden="true"></i> 
-                  <span>Courses</span>
-                </a>
-                <ul class="row dropdown-menu">
-                  <li class="col-sm-3 col-xs-12">
-                    <ul class="list-unstyled">
-                      <li>Courses Grid</li>
-                      <li><a href="course-grid-full.html">Courses Grid Fullwidth</a></li>
-                      <li><a href="course-grid-left-sidebar.html">Courses Grid Left Sidebar</a></li>
-                      <li><a href="course-grid-right-sidebar.html">Courses Grid Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li class="col-sm-3 col-xs-12">
-                    <ul class="list-unstyled">
-                      <li>Courses List</li>
-                      <li><a href="course-list-fullwidth.html">Courses List Fullwidth</a></li>
-                      <li><a href="course-list-left-sidebar.html">Courses List left Sidebar</a></li>
-                      <li><a href="course-list-right-sidebar.html">Courses List Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li class="col-sm-3 col-xs-12">
-                    <ul class="list-unstyled">
-                      <li>Single Course</li>
-                      <li><a href="course-single.html">Single Course Fullwidth</a></li>
-                      <li><a href="course-single-left-sidebar.html">Single Course left Sidebar</a></li>
-                      <li><a href="course-single-right-sidebar.html">Single Course Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li class="col-sm-3 col-xs-12">
-                    <ul class="list-unstyled">
-                      <li>Checkout</li>
-                      <li><a href="checkout-step-1.html">Personal Info</a></li>
-                      <li><a href="checkout-step-2.html">Payment Info</a></li>
-                      <li><a href="checkout-step-3.html">Confirmation</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li class="dropdown singleDrop color-4">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-pencil-square-o bg-color-4" aria-hidden="true"></i> 
-                  <span>Store</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle " data-toggle="dropdown">Products<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="product.html">Products Fullwidth</a></li>
-                      <li><a href="product-left-sidebar.html">Products Left Sidebar</a></li>
-                      <li><a href="product-right-sidebar.html">Products Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="single-product.html">Single Product</a></li>
-                  <li><a href="category.html">Product Categories</a></li>
-                  <li><a href="cart-page.html">Cart</a></li>
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Checkout<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="checkout-step-1.html">Personal Info</a></li>
-                      <li><a href="checkout-step-2.html">Payment Info</a></li>
-                      <li><a href="checkout-step-3.html">Confirmation</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li class="dropdown singleDrop color-5">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-calendar bg-color-5" aria-hidden="true"></i> 
-                  <span>Blog</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Blog Grid<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="blog-grid.html">Blog Grid Fullwidth</a></li>
-                      <li><a href="blog-grid-left-sidebar.html">Blog Grid Left Sidebar</a></li>
-                      <li><a href="blog-grid-right-sidebar.html">Blog Grid Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Blog List<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="blog-list.html">Blog List Fullwidth</a></li>
-                      <li><a href="blog-list-left-sidebar.html">Blog List Left Sidebar</a></li>
-                      <li><a href="blog-list-right-sidebar.html">Blog List Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                  <li class="dropdown dropdown-submenu">
-                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Single Blog<i class="fa fa-chevron-right" aria-hidden="true"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li><a href="single-blog.html">Single Blog Fullwidth</a></li>
-                      <li><a href="single-blog-left-sidebar.html">Single Blog Left Sidebar</a></li>
-                      <li><a href="single-blog-right-sidebar.html">Single Blog Right Sidebar</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li class="dropdown singleDrop color-6">
-                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-gg bg-color-6" aria-hidden="true"></i> <span>Components</span></a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a href="accordion-toggles.html">Accordions &amp; Toggles</a></li>
-                  <li><a href="tabs-dropdown.html">Tabs &amp; Dropdowns</a></li>
-                </ul>
-              </li>
-            </ul>
+            <a class="navbar-brand" href="/"><img class="img-responsive" src="/static/img/logo-school.png" alt="Kidz School"></a>
           </div>
 
         </div>
       </nav>
     </header>
     <!-- LIGHT SECTION -->
-    <section class="lightSection full-width clearfix" style="min-height: 400px;">
+    <section class="full-width clearfix" style="min-height: 400px;background-color: #f5f5f5;padding: 20px 0;">
       <div class="container">
       {% if messages %}
           {% for message in messages %}
@@ -304,14 +139,19 @@
       <div class="footerInfoArea full-width clearfix" style="background-image: url(/static/img/footer/footer-bg-1.png);">
         <div class="container">
           <div class="row">
+            <div class="col-sm-2">
+            </div>
             <div class="col-sm-3 col-xs-12">
               <div class="footerTitle">
                 <a href="index-v1.html"><img src="/static/img/logo-footer.png"></a>
               </div>
               <div class="footerInfo">
-                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa officia.Lorem ipsum dolor sit amet.</p>
-                <p>consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <p>Reading Comprehension App is the best way to get your kids get interested in their study.</p>
+                <p>Explore around and let us know if you are interested in buying our service.</p>
               </div>
+            </div>
+            <div class="col-sm-4">
+              
             </div>
             <div class="col-sm-3 col-xs-12">
               <div class="footerTitle">
@@ -320,88 +160,19 @@
               <div class="footerInfo">
                 <ul class="list-unstyled footerList">
                   <li>
-                    <a href="index-v1.html">
-                    <i class="fa fa-angle-double-right" aria-hidden="true"></i>Kidz School
+                    <a href="/">
+                    <i class="fa fa-angle-double-right" aria-hidden="true"></i>Reading Comprehension App
                     </a>
                   </li>
                   <li>
-                    <a href="about_us.html">
-                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>About Kidz School
-                    </a>
-                  </li>
-                  <li>
-                    <a href="index-v2.html">
-                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>Kidz Store
-                    </a>
-                  </li>
-                  <li>
-                    <a href="index-v3.html">
-                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>Kidz Daycare
-                    </a>
-                  </li>
-                  <li>
-                    <a href="photo-gallery.html">
-                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                      Photo Gallery
+                    <a href="#">
+                      <i class="fa fa-angle-double-right" aria-hidden="true"></i>Contact Us
                     </a>
                   </li>
                 </ul>
               </div>
             </div>
-            <div class="col-sm-3 col-xs-12">
-              <div class="footerTitle">
-                <h4>Recent Post</h4>
-              </div>
-              <div class="footerInfo">
-                <ul class="list-unstyled postLink">
-                  <li>
-                    <div class="media">
-                      <a class="media-left" href="single-blog.html">
-                        <img class="media-object img-rounded border-color-1" src="/static/img/footer/footer-img-1.png" alt="Image">
-                      </a>
-                      <div class="media-body">
-                        <h5 class="media-heading"><a href="single-blog.html">A Clean Website Gives More Experience To The Visitors</a></h5>
-                        <p>July 7 - 2016</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media">
-                      <a class="media-left" href="single-blog-left-sidebar.html">
-                        <img class="media-object img-rounded border-color-2" src="/static/img/footer/footer-img-2.png" alt="Image">
-                      </a>
-                      <div class="media-body">
-                        <h5 class="media-heading"><a href="single-blog-left-sidebar.html">A Clean Website Gives More Experience To The Visitors</a></h5>
-                        <p>July 7 - 2016</p>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="media">
-                      <a class="media-left" href="single-blog-left-sidebar.html">
-                        <img class="media-object img-rounded border-color-4" src="/static/img/footer/footer-img-3.png" alt="Image">
-                      </a>
-                      <div class="media-body">
-                        <h5 class="media-heading"><a href="single-blog-left-sidebar.html">A Clean Website Gives More Experience To The Visitors</a></h5>
-                        <p>July 7 - 2016</p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-sm-3 col-xs-12">
-              <div class="footerTitle">
-                <h4>Mailing List</h4>
-              </div>
-              <div class="footerInfo">
-                <p>Sign up for our mailing list to get latest updates and offers.</p>
-                <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Email address" aria-describedby="basic-addon21">
-                  <button type="submit" class="input-group-addon" id="basic-addon21"><i class="fa fa-check" aria-hidden="true"></i></button>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -420,7 +191,7 @@
             </div>
             <div class="col-sm-7 col-sm-pull-5 col-xs-12">
               <div class="copyRightText">
-                <p>© 2016 Copyright Kidz School Bootstrap Template by <a href="https://www.iamabdus.com/">Abdus</a>.</p>
+                <p>© 2016 Copyright Reading Comprehension App.</p>
               </div>
             </div>
           </div>

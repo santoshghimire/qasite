@@ -49,14 +49,17 @@
 #audio-modal-body, #article-modal-title, #audio-modal-title{
 	text-align: center;
 }
-
+#article-modal-body > p{
+    font-size: 16px;
+    line-height: 30px;
+}
 /* Quiz CSS */
 body{
 	background-color: #CEC8C8;
 }
 .examdiv{
-	padding: 10px 30px 10px 30px;
-	margin-top: 10px;
+	padding: 0px 30px 10px 30px;
+	margin-top: 0px;
 	border-radius: 5px;
 	background-color: white;
 	min-height: 300px;
@@ -65,7 +68,7 @@ body{
     min-width:100%;
     display: block;
     text-align: left;
-    margin-top: 15px;
+    margin-top: 5px;
     padding-left: 10px !important;
     cursor: pointer;
     background-color: #eee;
@@ -82,16 +85,16 @@ body{
 	background-color: white;
 }*/
 .question-main{
-	padding-bottom: 20px;
+	padding-bottom: 10px;
 }
 .opt, .ans-text{
-	padding-bottom: 20px;	
+	padding-bottom: 10px;	
 }
 label{
 	padding-left: 5px;
 }
 .options{
-	padding-left: 30px;
+	/*padding-left: 30px;*/
 }
 .next{
 	margin-left: 10px;
@@ -121,8 +124,8 @@ label{
 and (min-device-width : 600px) 
 and (max-device-width : 800px){
 	.examdiv{
-		padding: 10px 30px 0px 30px;
-		margin-top: 10px;
+		padding: 0px 30px 0px 30px;
+		margin-top: 0px;
 		min-height: 350px;
 		font-size: 12px;
 	}
@@ -191,8 +194,10 @@ and (max-device-width : 800px){
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body()"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="article-modal-title"></h4>
       </div>
-      <div class="modal-body" id="article-modal-body" style="max-height: 400px;">
+      <div class="modal-body" id="article-modal-body" style="height: 400px; overflow-y: scroll;">
 
+      </div>
+      <div class="modal-footer" id="article-modal-footer" style="text-align: center;">
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -305,7 +310,8 @@ function get_article_data(id) {
 }
 function get_content_page() {
     var article_html = global_content_data[global_content_page_number];
-    var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;">';
+    // var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;">';
+    var btn_html = '';
     if (global_content_data[global_content_page_number + 1] != undefined){
         var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\')" style="float:right;">Next</button>';
         btn_html += next_btn_html;
@@ -317,8 +323,9 @@ function get_content_page() {
         var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\')" style="float:left;">Previous</button>';
         btn_html += prev_btn_html;
     }
-    btn_html += '</div></div>';
-    article_html += btn_html;
+    // btn_html += '</div></div>';
+    // article_html += btn_html;
+    $('#article-modal-footer').html(btn_html);
     return article_html;
 }
 function next_content_page(type) {
@@ -398,7 +405,6 @@ function set_quiz_modal() {
 
 function get_exam_data(slug){
     // start exam
-    console.log(slug);
     global_quiz_marks = 0;
     global_question_number = 0;
     var exam_url = "/api/quiz/start/" + slug + "/";
@@ -406,7 +412,6 @@ function get_exam_data(slug){
         url: exam_url,
         type: "GET",
         success: function(data) {
-            console.log(data);
             global_exam_data = data;
             first_question = data.questions[global_question_number];
             set_question(first_question, global_question_number);
@@ -416,14 +421,11 @@ function get_exam_data(slug){
             $('#quizModal').modal('hide');
             $('#error-modal-title').html(error_msg);
             $('#errorModal').modal('show');
-            console.log(errorThrown);
         }
     });
 }
 
 function set_question(data, question_no){
-    console.log(data);
-    console.log(question_no);
     global_is_clicked = 0;
     question_no += 1;
     if(data.question){        
