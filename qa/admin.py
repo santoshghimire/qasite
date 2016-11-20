@@ -24,7 +24,7 @@ class CertificateAdmin(admin.ModelAdmin):
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'level', 'slug', 'created', 'active'
+        'title', 'level', 'slug', 'created', 'modified', 'active'
     )
     search_fields = [
         'title', 'slug', 'level__name'
