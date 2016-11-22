@@ -106,11 +106,13 @@
     <!-- LIGHT SECTION -->
     <section class="full-width clearfix" style="min-height: 400px;background-color: #f5f5f5;padding: 20px 0;">
       <div class="container">
+      {% comment %}
       {% if messages %}
           {% for message in messages %}
               <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
           {% endfor %}
       {% endif %}
+      {% endcomment %}
 
       {% block content %}
       {% endblock content %}
