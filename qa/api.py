@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Article, Quiz, Question
+from .models import Article, Quiz, Question, ArticleHistory
 from .serializer import QuestionAttemptSerializer
 
 
@@ -138,25 +138,57 @@ class ArticleDetailViewAPI(APIView):
 
         if article.audio:
             data['audio'] = article.audio.url
-        # if article.content:
-        #     content_path = str(article.content.url)
-        #     root_dir = str(environ.Path(__file__) - 2)
-        #     root_dir = os.path.join(root_dir, 'qasite')
-        #     content_full_path = root_dir + content_path
-        #     images_folder = root_dir + '/media/article/images/'
-        #     pages = get_pages(content_full_path, images_folder=images_folder)
-        #     new_pages = []
-        #     for page in pages:
-        #         page = page.decode('utf8')
-        #         # image is present
-        #         page = page.replace(
-        #             '<img', '<img style="float: right; margin-left: 20px;max-width:400px;"'
-        #         )
-        #         page = page.replace(images_folder, '/media/article/images/')
-        #         new_pages.append(page)
-        #     data['pages'] = new_pages
         if article.content_formatted:
             split = article.content_formatted.split('<hr />')
             # data['pages'] = [article.content_formatted]
             data['pages'] = split
+        else:
+            data['pages'] = ['<p>Content for ' + data['title'] + ' not available.</p>']
         return Response(data)
+
+
+class ArticleHistoryCreate(LoginRequiredMixin, APIView):
+    """Post a question attempt."""
+    def get(self, request, article_id, *args, **kwargs):
+        try:
+            article = Article.objects.get(id=int(article_id))
+        except:
+            return Response({'status': 'error'})
+        history, created = ArticleHistory.objects.get_or_create(
+            article=article,
+            user=request.user
+        )
+        return_data = {
+            'article': history.article.id,
+            'user': request.user.username,
+            'reading': int(history.reading),
+            'listening': int(history.listening),
+            'quiz': int(history.quiz)
+        }
+        return Response(return_data)
+
+    def post(self, request, article_id, *args, **kwargs):
+        data = dict(request.POST)
+        try:
+            article = Article.objects.get(id=int(article_id))
+        except:
+            return Response({'status': 'error'})
+        history, created = ArticleHistory.objects.get_or_create(
+            article=article,
+            user=request.user
+        )
+        if data.get('reading'):
+            history.reading = True
+        if data.get('listening'):
+            history.listening = True
+        if data.get('quiz'):
+            history.quiz = True
+        history.save()
+        return_data = {
+            'article': history.article.id,
+            'user': request.user.username,
+            'reading': int(history.reading),
+            'listening': int(history.listening),
+            'quiz': int(history.quiz)
+        }
+        return Response(return_data)

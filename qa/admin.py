@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import (
     Category, Article, Question, Option,
     QuestionAttempt, Level, Grade, QuestionAttemptPoint,
-    Quiz, QuizResult
+    Quiz, QuizResult, ArticleHistory
 )
 
 admin.site.register(Option)
@@ -14,6 +14,7 @@ admin.site.register(Level)
 admin.site.register(Grade)
 admin.site.register(Quiz)
 admin.site.register(QuizResult)
+admin.site.register(ArticleHistory)
 
 
 @admin.register(Category)

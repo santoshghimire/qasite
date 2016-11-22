@@ -379,3 +379,9 @@ class ArticleHistory(models.Model):
     quiz = models.BooleanField(default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     article = models.ForeignKey(Article, related_name='history')
+
+    def __str__(self):
+        """Magic function for string."""
+        return "{0} - {1}".format(
+            self.user.username, self.article.title
+        )

@@ -30,6 +30,7 @@
 	font-size: 20px;
 	color: white;
     margin-bottom: 10px;
+    font-weight: 800px;
 }
 .white{
 	color: white;
@@ -39,8 +40,25 @@
 	color: #9e9595;
 	font-size: 20px;
 }
+.green{
+    background: #058d38;
+}
+.blue{
+    background: #0c5fb0;
+}
 .action-item{
 	margin-right: 20px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    box-sizing: border-box;
+    display: inline-block !important;
+    height: 41px;
+    margin: 10px 4px 0 4px;
+    position: relative;
+    text-align: center;
+    transition: background .3s, box-shadow .3s;
+    vertical-align: middle;
+    width: 41px;
 }
 .title{
 	margin-bottom: 20px;
@@ -155,29 +173,60 @@ and (max-device-width : 800px){
 {% endif %}
 <div class="row">
 	<div class="col-md-12 col-sm-12">
-		{% for article in object_list %}
+		{% for article in articles %}
 		<div class="col-md-3 col-sm-4 article offset-md-1 offset-sm-2">
             <div class="row">
                 <div class="col-md-12 col-sm-12">
-            {% if article.image %}
-            <img src="{{article.image.url}}" class="img-responsive article-thumb">
+            {% if article.obj.image %}
+            <img src="{{article.obj.image.url}}" class="img-responsive article-thumb">
             {% else %}
             <img src="/media/article/default.png" class="img-responsive article-thumb-default">
             {% endif %}
                 </div>
             </div>
-    		<p class="article-title">{{article}}</p>
+    		<p class="article-title">{{article.obj}}</p>
     		<div class="actions">
-    			<a href="#" class="action-item" onclick="show_article('{{article.title}}', '{{article.id}}')" title="Read this article."><i class="fa fa-eye white" aria-hidden="true"></i></a>
-    			{% if article.audio %}
-        			<a href="#" class="action-item" onclick="show_audio('{{article.title}}', '{{article.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true"></i></a>
-    			{% else %}
-        			<a class="action-item" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true"></i></a>
-    			{% endif %}
-                {% if article.question_set.all %}
-                    <a href="#" class="action-item" onclick="show_quiz('{{article.title}}', '{{article.slug}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true"></i></a>
+                {% if article.obj.content_formatted %}
+                    {% if article.reading %}
+        			<a href="#" class="action-item green" onclick="show_article('{{article.obj.title}}', '{{article.obj.id}}')" title="Read this article.">
+                        <span class="fa fa-eye white" aria-hidden="true" style="margin-top: 15px;"></span>
+                        <img src="{% static 'img/ico-complete-perfect.png' %}" class="icon-perfect" style="max-width: 40px; margin-top: -90px; margin-left: 15px;">
+                    </a>
+                    {% else %}
+                    <a href="#" class="action-item blue" onclick="show_article('{{article.obj.title}}', '{{article.obj.id}}')" title="Read this article.">
+                        <span class="fa fa-eye white" aria-hidden="true" style="margin-top: 15px;"></span>
+                    </a>
+                    {% endif %}
                 {% else %}
-                    <a class="action-item" title="Quiz not available."><i class="fa fa-question grey" aria-hidden="true"></i></a>
+                <a class="action-item blue" title="Article not available.">
+                    <span class="fa fa-eye grey" aria-hidden="true" style="margin-top: 15px;"></span>
+                </a>
+                {% endif %}
+
+    			{% if article.obj.audio %}
+                    {% if article.listening %}
+        			<a href="#" class="action-item green" onclick="show_audio('{{article.obj.title}}', '{{article.obj.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true" style="margin-top: 15px;"></i>
+                    <img src="{% static 'img/ico-complete-perfect.png' %}" class="icon-perfect" style="max-width: 40px; margin-top: -90px; margin-left: 15px;">
+                    </a>
+                    {% else %}
+                    <a href="#" class="action-item blue" onclick="show_audio('{{article.obj.title}}', '{{article.obj.id}}')" title="Listen to this article."><i class="fa fa-headphones white" aria-hidden="true" style="margin-top: 15px;"></i>
+                    </a>
+                    {% endif %}
+    			{% else %}
+        			<a class="action-item blue" title="Audio not available."><i class="fa fa-headphones grey" aria-hidden="true" style="margin-top: 15px;"></i></a>
+    			{% endif %}
+
+                {% if article.obj.question_set.all %}
+                    {% if article.quiz %}
+                        <a href="#" class="action-item green" onclick="show_quiz('{{article.obj.title}}', '{{article.obj.slug}}', '{{article.obj.id}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true" style="margin-top:15px;"></i>
+                        <img src="{% static 'img/ico-complete-perfect.png' %}" class="icon-perfect" style="max-width: 40px; margin-top: -90px; margin-left: 15px;">
+                        </a>
+                    {% else %}
+                        <a href="#" class="action-item blue" onclick="show_quiz('{{article.obj.title}}', '{{article.obj.slug}}', '{{article.obj.id}}')" title="Take quiz for this article."><i class="fa fa-question white" aria-hidden="true" style="margin-top:15px;"></i>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a class="action-item blue" title="Quiz not available."><i class="fa fa-question grey" aria-hidden="true" style="margin-top: 15px;"></i></a>
                 {% endif %}
     		</div>
 		</div>
@@ -279,16 +328,50 @@ and (max-device-width : 800px){
 global_content_page_number = 0;
 global_content_data = '';
 global_quiz_marks = 0;
+global_article_history = '';
+
 function show_article(title, id){
 	get_article_data(id);
     $('#articleModal').modal('show');
     $('#article-modal-title').text(title);
+    update_article_history({'reading': 1}, id);
 }
 
 function show_audio(title, id){
 	get_audio_data(id);
     $('#audioModal').modal('show');
     $('#audio-modal-title').text(title);
+    update_article_history({'listening': 1}, id);
+}
+
+function get_article_history(id) {
+    var submit_url = 'api/article-history/' + id.toString() + '/';
+    $.ajax({
+        url: submit_url,
+        type: "GET",
+        success: function(data) {
+            console.log(data);
+            global_article_history = data;
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function update_article_history(data, id) {
+    var submit_url = 'api/article-history/' + id.toString() + '/';
+    $.ajax({
+        url: submit_url,
+        type: "POST",
+        data: data,
+        success: function(data) {
+            console.log(data);
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log(errorThrown);
+        }
+    });
 }
 
 function get_article_data(id) {
@@ -366,11 +449,12 @@ global_is_clicked = 0;
 global_question_number = 0;
 global_total_points = 0;
 
-function show_quiz(title, slug){
+function show_quiz(title, slug, id){
     set_quiz_modal();
 	get_exam_data(slug);
     $('#quizModal').modal('show');
     $('#quiz-modal-title').text(title);
+    update_article_history({'quiz': 1}, id);
 }
 
 function set_quiz_modal() {

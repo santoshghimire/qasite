@@ -15,7 +15,8 @@ from .views import ArticleListView, LevelUpView
 from .quiz import QuizView
 from .api import (
     StartQuizApi, QuestionApi,
-    QuestionAttemptCreate, ArticleDetailViewAPI
+    QuestionAttemptCreate, ArticleDetailViewAPI,
+    ArticleHistoryCreate
 )
 
 urlpatterns = [
@@ -78,5 +79,10 @@ urlpatterns = [
         regex=r'^api/question/attempt/$',
         view=QuestionAttemptCreate.as_view(),
         name='question_attempt_create'
+    ),
+    url(
+        regex=r'^api/article-history/(?P<article_id>[-\d]+)/$',
+        view=ArticleHistoryCreate.as_view(),
+        name='article_history'
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

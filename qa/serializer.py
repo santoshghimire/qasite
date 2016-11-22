@@ -4,8 +4,14 @@ from rest_framework import serializers
 
 from .models import (
     QuestionAttempt, Question, Quiz, QuestionAttemptPoint,
-    QuizResult
+    QuizResult, ArticleHistory
 )
+
+
+class ArticleHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArticleHistory
+        fields = ('reading', 'listening', 'quiz', 'user', 'article',)
 
 
 class QuestionAttemptSerializer(serializers.Serializer):

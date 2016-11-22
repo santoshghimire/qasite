@@ -46,6 +46,30 @@ class ArticleListView(LoginRequiredMixin, ListView):
         passes_threshold = get_level_percent(self.request.user)
         if passes_threshold:
             context['passes_threshold'] = True
+        total_data = []
+        for article in self.object_list:
+            try:
+                history = article.history.get(user=self.request.user)
+                reading = history.reading
+                listening = history.listening
+                quiz = history.quiz
+            except:
+                reading, listening, quiz = False
+            data = {
+                'obj': article,
+                'reading': reading,
+                'listening': listening,
+                'quiz': quiz
+            }
+            total_data.append(data)
+        # article_histories = ArticleHistory.objects.filter(
+        #     user=self.request.user,
+        #     article__in=self.object_list
+        # )
+        # article_histories = [{'id': i.article.id, 'history': i} for i in list(article_histories)]
+        # context['article_histories'] = article_histories
+        # print(article_histories)
+        context['articles'] = total_data
         return context
 
 
