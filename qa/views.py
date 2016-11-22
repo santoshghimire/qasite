@@ -54,7 +54,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
                 listening = history.listening
                 quiz = history.quiz
             except:
-                reading, listening, quiz = False
+                reading, listening, quiz = False, False, False
             data = {
                 'obj': article,
                 'reading': reading,
