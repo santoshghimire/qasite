@@ -22,6 +22,8 @@ def get_level_percent(user):
         level_percent = int(level_obtained_score / level_total_score * 100)
     except:
         level_percent = 0
+    print('level_percent', level_percent)
+    print('user.level.threshold', user.level.threshold)
     passes_threshold = level_percent >= user.level.threshold
     return passes_threshold
 
@@ -63,6 +65,12 @@ class ArticleListView(LoginRequiredMixin, ListView):
             }
             total_data.append(data)
         context['articles'] = total_data
+        levels = list(Level.objects.all().order_by('name'))
+        try:
+            levels = sorted(levels, key=lambda k: int(k.name))
+        except:
+            pass
+        context['levels'] = levels
         return context
 
 

@@ -175,6 +175,17 @@ and (max-device-width : 800px){
     </div>
 </div>
 {% endif %}
+{% if levels %}
+    <div class="row">
+    {% for level in levels %}
+        {% if request.user.level == level %}
+        <a href="#" class="btn btn-success" style="min-width: 30px;">{{level.name}}</a>
+        {% else %}
+        <a href="#" class="btn btn-default" style="min-width: 30px;">{{level.name}}</a>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endif %}
 <div class="row">
 	<div class="col-md-12 col-sm-12">
 		{% for article in articles %}
