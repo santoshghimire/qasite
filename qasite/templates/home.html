@@ -64,10 +64,14 @@
 	margin-bottom: 20px;
 	text-align: center;
 }
-#audio-modal-body, #article-modal-title, #audio-modal-title{
+#article-modal-title, #audio-modal-title{
 	text-align: center;
 }
 #article-modal-body > p{
+    font-size: 16px;
+    line-height: 30px;
+}
+#audio-text-body > p{
     font-size: 16px;
     line-height: 30px;
 }
@@ -240,7 +244,7 @@ and (max-device-width : 800px){
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body()"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body('#article-modal-body')"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="article-modal-title"></h4>
       </div>
       <div class="modal-body" id="article-modal-body" style="height: 400px; overflow-y: scroll;">
@@ -254,15 +258,22 @@ and (max-device-width : 800px){
 
 
 <div class="modal fade" id="audioModal" style="margin-top: 12%;">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clear_modal_body('#audio-modal-body')"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="audio-modal-title"></h4>
       </div>
-      <div class="modal-body" id="audio-modal-body">
-
+      <div class="modal-body" id="audio-modal-body" style="height: 400px; overflow-y: scroll;">
+            <div id="audio-text-body">
+                
+            </div>
+            <div id="audio-player" style="text-align: center;margin-top: 20px;">
+                
+            </div>
       </div>
+        <div class="modal-footer" id="audio-modal-footer" style="text-align: center;">
+        </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -350,7 +361,6 @@ function get_article_history(id) {
         url: submit_url,
         type: "GET",
         success: function(data) {
-            console.log(data);
             global_article_history = data;
         },
         error: function( xhr, status, errorThrown ) {
@@ -366,7 +376,6 @@ function update_article_history(data, id) {
         type: "POST",
         data: data,
         success: function(data) {
-            console.log(data);
         },
         error: function( xhr, status, errorThrown ) {
             console.log(errorThrown);
@@ -383,42 +392,49 @@ function get_article_data(id) {
             // console.log(data);
         	global_content_data = data.pages;
         	global_content_page_number = 0;
-    		var article_html = get_content_page();
-        	$('#article-modal-body').html(article_html);
+    		var article_data = get_content_page('article');
+        	$('#article-modal-body').html(article_data.article);
+            $('#article-modal-footer').html(article_data.btn);
         },
         error: function( xhr, status, errorThrown ) {
             console.log(errorThrown);
         }
     });
 }
-function get_content_page() {
+function get_content_page(reading_type) {
     var article_html = global_content_data[global_content_page_number];
     // var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;">';
     var btn_html = '';
     if (global_content_data[global_content_page_number + 1] != undefined){
-        var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\')" style="float:right;">Next</button>';
+        var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\', \'' + reading_type + '\')" style="float:right;">Next</button>';
         btn_html += next_btn_html;
     }else{
         var finish_btn_html = '<button type="button" class="btn btn-primary" onclick="close_article_modal()" style="float:right;">Finish</button>';
         btn_html += finish_btn_html;
     }
     if (global_content_data[global_content_page_number - 1] != undefined){
-        var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\')" style="float:left;">Previous</button>';
+        var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\', \'' + reading_type + '\')" style="float:left;">Previous</button>';
         btn_html += prev_btn_html;
     }
     // btn_html += '</div></div>';
     // article_html += btn_html;
-    $('#article-modal-footer').html(btn_html);
-    return article_html;
+    // $('#article-modal-footer').html(btn_html);
+    return {'article': article_html, 'btn': btn_html};
 }
-function next_content_page(type) {
+function next_content_page(type, reading_type) {
     if(type =='next'){
         global_content_page_number += 1;
     }else{
         global_content_page_number -= 1;
     }
-    var article_html = get_content_page();
-	$('#article-modal-body').html(article_html);
+    var article_data = get_content_page(reading_type);
+	if(reading_type=='article'){
+        $('#article-modal-body').html(article_data.article);
+        $('#article-modal-footer').html(article_data.btn);
+    }else{
+        $('#audio-text-body').html(article_data.article);
+        $('#audio-modal-footer').html(article_data.btn);
+    }
 }
 
 function get_audio_data(id) {
@@ -429,8 +445,17 @@ function get_audio_data(id) {
         success: function(data) {
         	var audio_html = '<audio id="article_' + data.id.toString() + '" autoplay controls>' +
 		     '<source src="' + data.audio +'" /></audio>';
-	     // console.log(audio_html);
-        	$('#audio-modal-body').html(audio_html);
+        	// $('#audio-modal-body').html(audio_html);
+
+            global_content_data = data.pages;
+            global_content_page_number = 0;
+            var article_data = get_content_page();
+            // article_html += audio_html;
+            console.log($('#audio-text-body'));
+            console.log($('#audio-player'));
+            $('#audio-text-body').html(article_data.article);
+            $('#audio-player').html(audio_html);
+            $('#audio-modal-footer').html(article_data.btn);
         },
         error: function( xhr, status, errorThrown ) {
             console.log(errorThrown);
@@ -439,7 +464,12 @@ function get_audio_data(id) {
 }
 
 function clear_modal_body(body_id) {
-	$(body_id).html('');
+    if(body_id=='#audio-modal-body'){
+        var audio_body = '<div id="audio-text-body"></div><div id="audio-player" style="text-align: center;margin-top: 20px;"></div>';
+        $(body_id).html(audio_body);
+    }else{
+        $(body_id).html('');
+    }
     global_content_page_number = 0;
 }
 
@@ -567,9 +597,13 @@ function close_quiz_modal() {
 
 function close_article_modal() {
     $('#articleModal').modal('hide');
+    $('#audioModal').modal('hide');
 }
 
 function submit_answer(question_id, quiz_id, given_answer){
+    // change color of clicked div
+    $('.answerbtn').not('#opt_id_' + given_answer).attr('style', '');
+    $('#opt_id_' + given_answer).attr('style', 'background-color: #bbc5f5;');
     if (global_is_clicked > 4){
         // do not submit if clicked more than 4 times
         return false;
@@ -592,15 +626,11 @@ function submit_answer(question_id, quiz_id, given_answer){
                 // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #91e491;');
                 global_quiz_marks = global_quiz_marks + data.point;
                 global_total_points = data.total_points;
-                // console.log('correct');
-                // console.log(global_quiz_marks);
             }else{
                 // show red for given answer
                 // $('#opt_id_' + data.given_answer).attr('style', 'background-color: #f34040;');
                 // show green for correct answer
                 // $('#opt_id_' + data.correct_option).attr('style', 'background-color: #91e491;');
-                // console.log('Incorrect');
-                // console.log(global_quiz_marks);
             }
             global_is_clicked += 1;
             global_question_number += 1;
