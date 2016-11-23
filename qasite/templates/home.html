@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% block css %}
 <style type="text/css">
+/*.lvl-btn:hover{
+    width: 33px;
+    height: 55px;
+}*/
 .article{
 	min-height: 100px;
 	margin-bottom: 20px;
@@ -168,20 +172,15 @@ and (max-device-width : 800px){
 
 {% block content %}
 <h1 class="title">Available Articles</h1>
-{% if passes_threshold %}
-<div class="row">
-    <div class="col-md-12">
-    <a href="{% url 'qa:level-up' %}" class="btn btn-secondary" style="float: right;">Level Up</a>
-    </div>
-</div>
-{% endif %}
 {% if levels %}
     <div class="row">
     {% for level in levels %}
-        {% if request.user.level == level %}
-        <a href="#" class="btn btn-success" style="min-width: 30px;">{{level.name}}</a>
+        {% if request.user.level == level.level %}
+            <a href="#" class="btn btn-success lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
+        {% elif level.up %}
+            <a href="{% url 'qa:level-up' %}" class="btn btn-default lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
         {% else %}
-        <a href="#" class="btn btn-default" style="min-width: 30px;">{{level.name}}</a>
+            <a href="#" class="btn btn-default lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
         {% endif %}
     {% endfor %}
     </div>
