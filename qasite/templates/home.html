@@ -353,16 +353,18 @@ global_article_history = '';
 
 function show_article(title, id){
 	get_article_data(id);
+    $('#articleModal').modal({backdrop: 'static', keyboard: false});
     $('#articleModal').modal('show');
     $('#article-modal-title').text(title);
-    update_article_history({'reading': 1}, id);
+    // update_article_history({'reading': 1}, id);
 }
 
 function show_audio(title, id){
 	get_audio_data(id);
+    $('#audioModal').modal({backdrop: 'static', keyboard: false});
     $('#audioModal').modal('show');
     $('#audio-modal-title').text(title);
-    update_article_history({'listening': 1}, id);
+    // update_article_history({'listening': 1}, id);
 }
 
 function get_article_history(id) {
@@ -399,10 +401,9 @@ function get_article_data(id) {
         url: url,
         type: "GET",
         success: function(data) {
-            // console.log(data);
         	global_content_data = data.pages;
         	global_content_page_number = 0;
-    		var article_data = get_content_page('article');
+    		var article_data = get_content_page('article', data.id);
         	$('#article-modal-body').html(article_data.article);
             $('#article-modal-footer').html(article_data.btn);
         },
@@ -411,33 +412,35 @@ function get_article_data(id) {
         }
     });
 }
-function get_content_page(reading_type) {
+function get_content_page(reading_type, id) {
     var article_html = global_content_data[global_content_page_number];
     // var btn_html = '<div class="row"><div class="col-md-12" style="text-align: center;">';
     var btn_html = '';
     if (global_content_data[global_content_page_number + 1] != undefined){
-        var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\', \'' + reading_type + '\')" style="float:right;">Next</button>';
+        var next_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'next\', \'' + reading_type + '\', \'' + id +'\')" style="float:right;">Next</button>';
         btn_html += next_btn_html;
     }else{
         var finish_btn_html = '<button type="button" class="btn btn-primary" onclick="close_article_modal()" style="float:right;">Finish</button>';
         btn_html += finish_btn_html;
+        if(reading_type == 'article'){
+            update_article_history({'reading': 1}, id);
+        }else{
+            update_article_history({'listening': 1}, id);
+        }
     }
     if (global_content_data[global_content_page_number - 1] != undefined){
-        var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\', \'' + reading_type + '\')" style="float:left;">Previous</button>';
+        var prev_btn_html = '<button type="button" class="btn btn-primary" onclick="next_content_page(\'prev\', \'' + reading_type + '\', \'' + id +'\')" style="float:left;">Previous</button>';
         btn_html += prev_btn_html;
     }
-    // btn_html += '</div></div>';
-    // article_html += btn_html;
-    // $('#article-modal-footer').html(btn_html);
     return {'article': article_html, 'btn': btn_html};
 }
-function next_content_page(type, reading_type) {
+function next_content_page(type, reading_type, id) {
     if(type =='next'){
         global_content_page_number += 1;
     }else{
         global_content_page_number -= 1;
     }
-    var article_data = get_content_page(reading_type);
+    var article_data = get_content_page(reading_type, id);
 	if(reading_type=='article'){
         $('#article-modal-body').html(article_data.article);
         $('#article-modal-footer').html(article_data.btn);
@@ -455,14 +458,9 @@ function get_audio_data(id) {
         success: function(data) {
         	var audio_html = '<audio id="article_' + data.id.toString() + '" autoplay controls>' +
 		     '<source src="' + data.audio +'" /></audio>';
-        	// $('#audio-modal-body').html(audio_html);
-
             global_content_data = data.pages;
             global_content_page_number = 0;
-            var article_data = get_content_page();
-            // article_html += audio_html;
-            console.log($('#audio-text-body'));
-            console.log($('#audio-player'));
+            var article_data = get_content_page('audio', data.id);
             $('#audio-text-body').html(article_data.article);
             $('#audio-player').html(audio_html);
             $('#audio-modal-footer').html(article_data.btn);
@@ -492,9 +490,9 @@ global_total_points = 0;
 function show_quiz(title, slug, id){
     set_quiz_modal();
 	get_exam_data(slug);
+    $('#quizModal').modal({backdrop: 'static', keyboard: false});
     $('#quizModal').modal('show');
     $('#quiz-modal-title').text(title);
-    update_article_history({'quiz': 1}, id);
 }
 
 function set_quiz_modal() {
@@ -599,6 +597,7 @@ function end_exam(){
 	var end_exam_btn = '<div style="min-height: 300px;text-align: center;"> <p>Congratulations ! You have completed the quiz.</p><p style="margin-top: 20px;">You scored <strong>' + global_quiz_marks.toString() + ' out of ' + quiz_total_points +
         ' Points.</strong></p><p style="margin-top: 20px;>Click below to complete exam.</p><button type="button" class="btn btn-primary" onclick="close_quiz_modal()" style="margin-top: 30px;">Finish</button></div>';
     $('#quiz-modal-body').html(end_exam_btn);
+    update_article_history({'quiz': 1}, global_exam_data.article_id);
 }
 
 function close_quiz_modal() {
@@ -672,6 +671,9 @@ function reset_answer_colors(){
     $('.answerbtn').attr('style', 'background-color: #eee');
     $('.opt').remove();
 }
-
+$('#audioModal').on('hidden.bs.modal', function () {
+    $('#article_1')[0].pause();
+})
 </script>
+
 {% endblock javascript %}

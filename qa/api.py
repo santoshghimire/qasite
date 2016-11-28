@@ -92,6 +92,7 @@ class StartQuizApi(APIView):
             'id': quiz.id,
             'questions': [serialize_question(q) for q in quiz.questions.all()],
             'article': str(quiz.article),
+            'article_id': str(quiz.article.id),
             'category': str(quiz.article.category)
         }
         return Response(data)
