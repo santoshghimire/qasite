@@ -265,6 +265,15 @@ CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.j
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_IMAGE_BACKEND = 'pillow'
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'extraPlugins': ','.join([
+            'image2'
+        ])
+    }
+}
+
 DEFAULT_EMAIL_FROM = 'no-reply@kidzschool.com'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
