@@ -68,7 +68,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
         context['articles'] = total_data
         levels = list(Level.objects.all().order_by('name'))
 
-        user_level = self.request.user.level.level
+        user_level = self.request.user.level.name
         level = self.request.GET.get('level', user_level)
         # set level to user's current level if it is higher
         level = user_level if int(level) > user_level else int(level)
@@ -83,7 +83,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
                 lvl_item['up'] = True
             else:
                 lvl_item['up'] = False
-            if lvl.name <= user_level.name:
+            if lvl.name <= user_level:
                 lvl_item['link'] = True
             else:
                 lvl_item['link'] = False
