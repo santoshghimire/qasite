@@ -36,7 +36,10 @@ class ArticleListView(LoginRequiredMixin, ListView):
         if not self.request.user.level:
             level = Level.objects.get(name='1')
             self.request.user.level = level
-        level = self.request.user.level
+        user_level = self.request.user.level
+        level = self.request.GET.get('level', user_level)
+        # set level to user's current level if it is higher
+        level = user_level if int(level) > user_level else int(level)
         queryset = Article.objects.active().filter(level=level)
         return queryset
 
@@ -64,19 +67,28 @@ class ArticleListView(LoginRequiredMixin, ListView):
             total_data.append(data)
         context['articles'] = total_data
         levels = list(Level.objects.all().order_by('name'))
+
+        user_level = self.request.user.level
+        level = self.request.GET.get('level', user_level)
+        # set level to user's current level if it is higher
+        level = user_level if int(level) > user_level else int(level)
+
         total_levels = []
         for lvl in levels:
+            lvl_item = {'level': lvl}
             if (
-                int(lvl.name) == int(self.request.user.level.name) + 1 and
+                lvl.name == self.request.user.level.name + 1 and
                 passes_threshold
             ):
-                total_levels.append({'level': lvl, 'up': True})
+                lvl_item['up'] = True
             else:
-                total_levels.append({'level': lvl, 'up': False})
-        try:
-            total_levels = sorted(total_levels, key=lambda k: int(k['level'].name))
-        except:
-            pass
+                lvl_item['up'] = False
+            if lvl.name <= user_level.name:
+                lvl_item['link'] = True
+            else:
+                lvl_item['link'] = False
+            total_levels.append(lvl_item)
+        context['selected_level'] = int(level)
         context['levels'] = total_levels
         return context
 

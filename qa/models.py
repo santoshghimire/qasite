@@ -42,8 +42,7 @@ class Level(models.Model):
     """
 
     # Attributes
-    name = models.CharField(
-        max_length=10,
+    name = models.IntegerField(
         verbose_name=_("name"),
         help_text=_("Enter the level name")
     )
@@ -62,7 +61,7 @@ class Level(models.Model):
 
     def __str__(self):
         """Method to return object name in string."""
-        return self.name
+        return str(self.name)
 
 
 class Category(models.Model):

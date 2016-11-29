@@ -175,12 +175,14 @@ and (max-device-width : 800px){
 {% if levels %}
     <div class="row">
     {% for level in levels %}
-        {% if request.user.level == level.level %}
+        {% if selected_level == level.level.name %}
             <a href="#" class="btn btn-success lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
         {% elif level.up %}
             <a href="{% url 'qa:level-up' %}" class="btn btn-default lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
+        {% elif level.link %}
+            <a href="?level={{level.level.name}}" class="btn btn-default lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
         {% else %}
-            <a href="#" class="btn btn-default lvl-btn" style="min-width: 30px;">{{level.level.name}}</a>
+            <a href="#" class="btn btn-default lvl-btn" title="You cannot go to this level. Complete level {{request.user.level.name}} to unlock." style="min-width: 30px;">{{level.level.name}}</a>
         {% endif %}
     {% endfor %}
     </div>
@@ -675,5 +677,7 @@ $('#audioModal').on('hidden.bs.modal', function () {
     $('#article_1')[0].pause();
 })
 </script>
+
+
 
 {% endblock javascript %}
