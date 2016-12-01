@@ -8,6 +8,21 @@ QA site for kids
      :alt: Built with Cookiecutter Django
 
 
+Project setup
+--------
+
+1. You need to have Python 2 (preferrably python 2.7.6) on your system.
+2. You need to have pip installed.
+3. You need to have git installed.
+4. You need to install postgres version >= 9.5 on your system if not already installed. 
+5. Clone the project repo using command: git clone git@github.com:santoshghimire/qasite.git
+6. cd qasite and pip install -r requirements/local.txt
+7. Create a database named qasite (or you can choose your own name, just be sure to put this name in common.py line 110 in place of qasite).
+8. python manage.py migrate
+9. python manage.py runserver
+10. Create susperuser using the instruction given below.
+
+
 Settings
 --------
 
