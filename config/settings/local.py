@@ -50,6 +50,17 @@ CACHES = {
     }
 }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'qasite',
+        'USER': env('DATABASE_USER', default='root'),
+        'PASSWORD': env('DATABASE_PASSWORD', default='root'),
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
+
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
