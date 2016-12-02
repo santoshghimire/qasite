@@ -34,7 +34,11 @@ class ArticleListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if not self.request.user.level:
-            level = Level.objects.get(name='1')
+            try:
+                level = Level.objects.get(name=1)
+            except:
+                level = Level.objects.create(
+                    name=1, threshold=80)
             self.request.user.level = level
         user_level = self.request.user.level.name
         level = self.request.GET.get('level', user_level)
