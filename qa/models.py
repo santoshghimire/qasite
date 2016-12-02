@@ -6,7 +6,7 @@ from django.conf import settings
 from model_utils.models import TimeStampedModel
 from ckeditor_uploader.fields import RichTextUploadingField
 
-import os
+# import os
 
 from .managers import (
     CategoryManager, ArticleManager, QuestionManager,
@@ -15,7 +15,7 @@ from .managers import (
 from .validators import (
     validate_image, validate_audio, validate_video
 )
-from .tts import convert_tts
+# from .tts import convert_tts
 
 
 class Grade(models.Model):
@@ -147,20 +147,20 @@ class Article(TimeStampedModel):
     def save(self, *args, **kwargs):
         # create directory
         super(Article, self).save(*args, **kwargs)
-        try:
-            interview_dir_path = '/media/article/'
-            full_path = settings.MEDIA_FULL_ROOT + interview_dir_path
-            if not os.path.exists(full_path):
-                os.makedirs(full_path)
-            content_audio_file_path = full_path + '/' + str(self.id) + '.wav'
-            content_audio_mp3_file_path = full_path + '/' + str(self.id) + '.mp3'
-            convert_tts(
-                text='content_audio_text',
-                file_path=content_audio_file_path,
-                mp3_file_path=content_audio_mp3_file_path
-            )
-        except:
-            pass
+        # try:
+        #     interview_dir_path = '/media/article/'
+        #     full_path = settings.MEDIA_FULL_ROOT + interview_dir_path
+        #     if not os.path.exists(full_path):
+        #         os.makedirs(full_path)
+        #     content_audio_file_path = full_path + '/' + str(self.id) + '.wav'
+        #     content_audio_mp3_file_path = full_path + '/' + str(self.id) + '.mp3'
+        #     convert_tts(
+        #         text='content_audio_text',
+        #         file_path=content_audio_file_path,
+        #         mp3_file_path=content_audio_mp3_file_path
+        #     )
+        # except:
+        #     pass
 
 
 class Question(TimeStampedModel):
