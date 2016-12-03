@@ -40,6 +40,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
                 level = Level.objects.create(
                     name=1, threshold=80)
             self.request.user.level = level
+            self.request.user.save()
         user_level = self.request.user.level.name
         level = self.request.GET.get('level', user_level)
         # set level to user's current level if it is higher
