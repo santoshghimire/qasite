@@ -45,6 +45,7 @@ redis>=2.10.5
 django-autoslug==1.9.3
 djangorestframework==3.3.1
 xlrd
+xlwt
 pdfminer
 pydub==0.16.3
 django-ckeditor
