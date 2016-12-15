@@ -97,7 +97,7 @@ EMAIL_BACKEND = env('DJANGO_EMAIL_BACKEND', default='django.core.mail.backends.s
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
-    ("""Santosh Ghimire""", 'santosh.ghimire33@gmail.com'),
+    ("""Vicky""", 'poojaarya627@gmail.com'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -280,5 +280,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['brolance.com'])
 # EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'

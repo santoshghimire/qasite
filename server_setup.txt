@@ -1,0 +1,32 @@
+Server Setup:
+
+1. You need to have Python 2 (preferrably python 2.7.6) on your system.
+2. You need to have pip installed.
+3. You need to have git installed.
+4. You need to install mysql server on your system if not already installed. 
+5. Clone the project repo using command: git clone git@github.com:santoshghimire/qasite.git
+But for this, the public key of server has to be setup in project settings in github.
+6. Create a virtualenv: virtualenv env and activate it source env/bin/activate and pip install -r requirements/local.txt
+7. Create a database named qasite (or you can choose your own name, just be sure to put this name in common.py line 110 in place of qasite).
+8. python manage.py migrate
+9. Create susperuser using command: python manage.py createsuperuser
+10. Create a sh script named myscript.sh in /home/ubuntu/env/bin with below contents:
+#!/bin/bash
+sudo /home/ubuntu/env/bin/python manage.py runserver 0.0.0.0:80
+
+11. Create a new file using this command: sudo nano /etc/systemd/system/qasite.service
+[Unit]
+Description=qasite daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/qasite
+ExecStart=/home/ubuntu/env/bin/startscript
+
+[Install]
+WantedBy=multi-user.target
+
+12. Run this command: sudo systemctl daemon-reload
+13. sudo systemctl restart qasite
